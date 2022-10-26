@@ -3,7 +3,6 @@ package pt.cm.challenge_2;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
-import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Bundle;
 import android.view.Menu;
@@ -11,15 +10,15 @@ import android.view.MenuInflater;
 
 import java.util.List;
 
+import pt.cm.challenge_2.database.AppDatabase;
 import pt.cm.challenge_2.database.AppExecutors;
-import pt.cm.challenge_2.database.Challenge2Database;
 import pt.cm.challenge_2.database.entities.Notes;
 
 public class MainActivity extends AppCompatActivity implements FragmentChange {
 
-    private RecyclerView mRecyclerView;
+    //private RecyclerView mRecyclerView;
 //    private PersonAdaptor mAdapter;
-    private Challenge2Database mDb;
+    private AppDatabase mDb;
     private FragmentManager fm;
 
     @Override
@@ -28,7 +27,7 @@ public class MainActivity extends AppCompatActivity implements FragmentChange {
         setContentView(R.layout.activity_main);
 
         // get database
-        mDb = Challenge2Database.getInstance(getApplicationContext());
+        mDb = AppDatabase.getInstance(getApplicationContext());
 
         fm = getSupportFragmentManager();
         fm.beginTransaction()

@@ -11,20 +11,20 @@ import pt.cm.challenge_2.database.daos.NotesDAO;
 import pt.cm.challenge_2.database.entities.Notes;
 
 @Database(entities = {Notes.class}, exportSchema = false,version = 1)
-public abstract class Challenge2Database extends RoomDatabase {
-    private static final String LOG_TAG = Challenge2Database.class.getSimpleName();
+public abstract class AppDatabase extends RoomDatabase {
+    private static final String LOG_TAG = AppDatabase.class.getSimpleName();
     private static final String DB_NAME = "challenge2_db";
-    private static Challenge2Database sInstance;
+    private static AppDatabase sInstance;
     private static final Object LOCK = new Object();
 
-    public static synchronized Challenge2Database getInstance(Context context)
+    public static synchronized AppDatabase getInstance(Context context)
     {
         if (sInstance == null) {
             // only allows one thread at a time to run the follow operations
             synchronized (LOCK) {
                 Log.d(LOG_TAG, "Creating new database instance");
                 sInstance = Room.databaseBuilder(context.getApplicationContext(),
-                                Challenge2Database.class, Challenge2Database.DB_NAME)
+                                AppDatabase.class, AppDatabase.DB_NAME)
                         .build();
             }
         }
