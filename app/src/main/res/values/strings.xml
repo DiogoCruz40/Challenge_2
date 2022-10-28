@@ -2,4 +2,8 @@
     <string name="app_name">Challenge_2</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="plusmenu">plus</string>
+    <string name="searchmenu">search</string>
+    <string name="savemenu">save</string>
+    <string name="closemenu">close</string>
 </resources>

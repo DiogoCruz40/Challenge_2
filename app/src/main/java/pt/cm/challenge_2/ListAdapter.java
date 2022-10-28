@@ -3,23 +3,25 @@ package pt.cm.challenge_2;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
 
+import pt.cm.challenge_2.Interfaces.ClickListener;
+import pt.cm.challenge_2.Interfaces.LongClickListener;
+import pt.cm.challenge_2.dtos.NoteDTO;
+
 
 public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ViewHolder> {
-    private ArrayList<Note> notes;
+    private ArrayList<NoteDTO> notes;
     private ClickListener mClickListener;
     private LongClickListener mLongClickListener;
 
     // RecyclerView recyclerView;
-    public ListAdapter(ArrayList<Note> notes, ClickListener clickListener, LongClickListener longClickListener) {
+    public ListAdapter(ArrayList<NoteDTO> notes, ClickListener clickListener, LongClickListener longClickListener) {
         this.notes = notes;
         this.mClickListener = clickListener;
         this.mLongClickListener = longClickListener;
@@ -29,13 +31,12 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ViewHolder> {
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         LayoutInflater layoutInflater = LayoutInflater.from(parent.getContext());
         View listItem = layoutInflater.inflate(R.layout.list_item, parent, false);
-        ViewHolder viewHolder = new ViewHolder(listItem, mClickListener, mLongClickListener);
-        return viewHolder;
+        return new ViewHolder(listItem, mClickListener, mLongClickListener);
     }
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        final Note note = notes.get(position);
+        final NoteDTO note = notes.get(position);
         holder.textView.setText(note.getTitle());
     }
 
@@ -44,7 +45,7 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ViewHolder> {
         return notes.size();
     }
 
-    public ArrayList<Note> getNotes() {
+    public ArrayList<NoteDTO> getNotes() {
         return notes;
     }
 
@@ -76,14 +77,6 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ViewHolder> {
             longClickListener.onLongItemClick(getAdapterPosition(), view);
             return true;
         }
-    }
-
-    public interface ClickListener {
-        void onItemClick(int position, View v);
-    }
-
-    public interface LongClickListener {
-        void onLongItemClick(int position, View v);
     }
 }
 

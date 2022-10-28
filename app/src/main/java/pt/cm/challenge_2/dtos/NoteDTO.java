@@ -1,10 +1,10 @@
-package pt.cm.challenge_2;
+package pt.cm.challenge_2.dtos;
 
-public class Note {
+public class NoteDTO {
     private String title;
     private String note;
 
-    public Note(String title,String note) {
+    public NoteDTO(String title, String note) {
         this.title = title;
         this.note = note;
     }
