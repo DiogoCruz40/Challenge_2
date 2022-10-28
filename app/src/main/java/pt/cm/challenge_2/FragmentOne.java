@@ -16,8 +16,10 @@ import android.view.ViewGroup;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.widget.SearchView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.Locale;
 
 import pt.cm.challenge_2.Interfaces.ClickListener;
 import pt.cm.challenge_2.Interfaces.LongClickListener;
@@ -68,8 +70,23 @@ public class FragmentOne extends Fragment implements ClickListener, LongClickLis
 
             @Override
             public boolean onQueryTextChange(String s) {
-//                RecyclerView recyclerView = (RecyclerView) activitycontext.findViewById(R.id.notes);
-//                ((ListAdapter) recyclerView.getAdapter()).getNotes();
+                ArrayList<NoteDTO> notes = adapter.getNotes();
+                if (s.length()!=0) {
+                    ArrayList<NoteDTO> filteredList = new ArrayList<NoteDTO>();
+                    for (NoteDTO n : notes) {
+                        if (n.getTitle().toLowerCase().contains(s.toLowerCase())) {
+                            filteredList.add(n);
+                        }
+                    }
+                    if (filteredList.isEmpty()) {
+                        Toast.makeText(activitycontext, "No Results for your search", Toast.LENGTH_LONG).show();
+                    } else {
+                        adapter.setFilteredNotes(filteredList);
+                    }
+                } else {
+                    adapter.setFilteredNotes(notes);
+                }
+
                 return false;
             }
         });

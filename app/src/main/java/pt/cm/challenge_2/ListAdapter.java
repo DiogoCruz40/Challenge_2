@@ -12,17 +12,20 @@ import java.util.ArrayList;
 
 import pt.cm.challenge_2.Interfaces.ClickListener;
 import pt.cm.challenge_2.Interfaces.LongClickListener;
+import pt.cm.challenge_2.database.entities.Note;
 import pt.cm.challenge_2.dtos.NoteDTO;
 
 
 public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ViewHolder> {
     private ArrayList<NoteDTO> notes;
+    private ArrayList<NoteDTO> filteredNotes;
     private ClickListener mClickListener;
     private LongClickListener mLongClickListener;
 
     // RecyclerView recyclerView;
     public ListAdapter(ArrayList<NoteDTO> notes, ClickListener clickListener, LongClickListener longClickListener) {
         this.notes = notes;
+        this.filteredNotes = notes;
         this.mClickListener = clickListener;
         this.mLongClickListener = longClickListener;
     }
@@ -36,13 +39,18 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ViewHolder> {
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        final NoteDTO note = notes.get(position);
+        final NoteDTO note = filteredNotes.get(position);
         holder.textView.setText(note.getTitle());
     }
 
     @Override
     public int getItemCount() {
-        return notes.size();
+        return filteredNotes.size();
+    }
+
+    public  void setFilteredNotes(ArrayList<NoteDTO> filteredList){
+        this.filteredNotes = filteredList;
+        notifyDataSetChanged();
     }
 
     public ArrayList<NoteDTO> getNotes() {
