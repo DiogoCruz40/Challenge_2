@@ -1,6 +1,6 @@
 package pt.cm.challenge_2;
 
-import android.content.Context;
+import android.app.AlertDialog;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -15,11 +15,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Menu;
 import android.view.MenuInflater;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.SearchView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
-import java.util.Locale;
 
 import pt.cm.challenge_2.Interfaces.ClickListener;
 import pt.cm.challenge_2.Interfaces.LongClickListener;
@@ -30,6 +31,10 @@ public class FragmentOne extends Fragment implements ClickListener, LongClickLis
     private SharedViewModel mViewModel;
     private ListAdapter adapter;
     private MainActivity activitycontext;
+    private AlertDialog.Builder dialogBuilder;
+    private AlertDialog dialog;
+    private EditText newNoteName;
+    private Button deleteNote, saveNewName, cancel;
 
     public FragmentOne() {
 
@@ -103,7 +108,45 @@ public class FragmentOne extends Fragment implements ClickListener, LongClickLis
 
     @Override
     public void onLongItemClick(int position, View v) {
-        // TODO: pop up bs
+        createNewTitleDeletePopUp();
         System.out.println("long click on item: " + adapter.getNotes().get(position).getTitle());
+    }
+
+    public void createNewTitleDeletePopUp(){
+        dialogBuilder = new AlertDialog.Builder(activitycontext);
+        final View newTitleDeletePopUp = getLayoutInflater().inflate(R.layout.new_title_delete_popup, null);
+        newNoteName = (EditText) newTitleDeletePopUp.findViewById(R.id.newNoteName);
+
+        deleteNote = (Button) newTitleDeletePopUp.findViewById(R.id.deleteButton);
+        saveNewName = (Button) newTitleDeletePopUp.findViewById(R.id.editNameButton);
+        cancel = (Button) newTitleDeletePopUp.findViewById(R.id.cancelButton);
+
+        dialogBuilder.setView(newTitleDeletePopUp);
+        dialog = dialogBuilder.create();
+        dialog.show();
+
+        deleteNote.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // TODO: delete Note
+                dialog.dismiss();
+            }
+        });
+
+        saveNewName.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //TODO: save new name to the note
+                dialog.dismiss();
+            }
+        });
+
+        cancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+            }
+        });
+
     }
 }
