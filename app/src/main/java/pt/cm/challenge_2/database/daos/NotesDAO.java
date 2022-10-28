@@ -7,22 +7,25 @@ import androidx.room.Query;
 
 import java.util.List;
 
-import pt.cm.challenge_2.database.entities.Notes;
+import pt.cm.challenge_2.database.entities.Note;
 
 @Dao
 public interface NotesDAO {
     @Query("SELECT * FROM notes")
-    List<Notes> getAll();
+    List<Note> getAll();
 
     @Query("SELECT * FROM notes WHERE id_note IN (:userIds)")
-    List<Notes> loadAllByIds(int[] userIds);
+    List<Note> loadAllByIds(int[] userIds);
 
     @Query("SELECT * FROM notes WHERE title LIKE :titulo")
-    Notes findByTitle(String titulo);
+    Note findByTitle(String titulo);
+
+    @Query("UPDATE notes SET title = :newtitle WHERE id_note = :id_nota")
+    void updateTitle(int id_nota, String newtitle);
 
     @Insert
-    void insertAll(Notes... notes);
+    void insertAll(Note... note);
 
     @Delete
-    void delete(Notes notes);
+    void delete(Note note);
 }

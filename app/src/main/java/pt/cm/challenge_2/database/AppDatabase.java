@@ -8,9 +8,9 @@ import androidx.room.Room;
 import androidx.room.RoomDatabase;
 
 import pt.cm.challenge_2.database.daos.NotesDAO;
-import pt.cm.challenge_2.database.entities.Notes;
+import pt.cm.challenge_2.database.entities.Note;
 
-@Database(entities = {Notes.class}, exportSchema = false,version = 1)
+@Database(entities = {Note.class}, exportSchema = false,version = 1)
 public abstract class AppDatabase extends RoomDatabase {
     private static final String LOG_TAG = AppDatabase.class.getSimpleName();
     private static final String DB_NAME = "challenge2_db";

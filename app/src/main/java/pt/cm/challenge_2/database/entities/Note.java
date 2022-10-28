@@ -6,7 +6,7 @@ import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
 @Entity(tableName = "notes")
-public class Notes {
+public class Note {
     @PrimaryKey(autoGenerate = true)
     public int id_note;
 
@@ -15,5 +15,6 @@ public class Notes {
 
     @ColumnInfo(name = "description")
     public String description;
+    
 }
 

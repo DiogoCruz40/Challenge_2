@@ -1,6 +1,7 @@
 package pt.cm.challenge_2.dtos;
 
 public class NoteDTO {
+    private int id;
     private String title;
     private String note;
 
@@ -11,6 +12,14 @@ public class NoteDTO {
 
     public String getTitle() {
         return title;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     public void setTitle(String title) {

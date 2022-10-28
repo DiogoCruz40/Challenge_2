@@ -13,7 +13,7 @@ import java.util.List;
 import pt.cm.challenge_2.Interfaces.FragmentChange;
 import pt.cm.challenge_2.database.AppDatabase;
 import pt.cm.challenge_2.database.AppExecutors;
-import pt.cm.challenge_2.database.entities.Notes;
+import pt.cm.challenge_2.database.entities.Note;
 
 public class MainActivity extends AppCompatActivity implements FragmentChange {
 
@@ -39,7 +39,6 @@ public class MainActivity extends AppCompatActivity implements FragmentChange {
     @Override
     protected void onResume() {
         super.onResume();
-        retrieveTasks();
     }
 
     private void retrieveTasks() {
@@ -48,7 +47,7 @@ public class MainActivity extends AppCompatActivity implements FragmentChange {
             @Override
             public void run() {
                 // how to get all notes
-                final List<Notes> notes = mDb.notesDAO().getAll();
+                final List<Note> notes = mDb.notesDAO().getAll();
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
