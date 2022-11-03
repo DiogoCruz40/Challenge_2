@@ -5,7 +5,8 @@ public class NoteDTO {
     private String title;
     private String note;
 
-    public NoteDTO(String title, String note) {
+    public NoteDTO(int id, String title, String note) {
+        this.id = id;
         this.title = title;
         this.note = note;
     }

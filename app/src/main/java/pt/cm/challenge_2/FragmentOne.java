@@ -6,6 +6,7 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -30,11 +31,12 @@ public class FragmentOne extends Fragment implements ClickListener, LongClickLis
 
     private SharedViewModel mViewModel;
     private ListAdapter adapter;
-    private MainActivity activitycontext;
+    private MainActivity activityContext;
     private AlertDialog.Builder dialogBuilder;
     private AlertDialog dialog;
     private EditText newNoteName;
     private Button deleteNote, saveNewName, cancel;
+    private int id;
 
     public FragmentOne() {
 
@@ -45,13 +47,11 @@ public class FragmentOne extends Fragment implements ClickListener, LongClickLis
                              @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_one, container, false);
         setHasOptionsMenu(true);
-        activitycontext = (MainActivity) inflater.getContext();
+        activityContext = (MainActivity) inflater.getContext();
         RecyclerView recyclerView = (RecyclerView) view.findViewById(R.id.notes);
 
-        ArrayList<NoteDTO> notes = new ArrayList<NoteDTO>();
-        notes.add(new NoteDTO("note1", "hello"));
-        notes.add(new NoteDTO("note2", "hello"));
-        notes.add(new NoteDTO("note3", "hello"));
+        this.mViewModel = new ViewModelProvider(getActivity()).get(SharedViewModel.class);
+        ArrayList<NoteDTO> notes = mViewModel.getNotes();
 
         adapter = new ListAdapter(notes, this::onItemClick, this::onLongItemClick);
         recyclerView.setHasFixedSize(true);
@@ -84,7 +84,7 @@ public class FragmentOne extends Fragment implements ClickListener, LongClickLis
                         }
                     }
                     if (filteredList.isEmpty()) {
-                        Toast.makeText(activitycontext, "No Results for your search", Toast.LENGTH_LONG).show();
+                        Toast.makeText(activityContext, "No Results for your search", Toast.LENGTH_LONG).show();
                     } else {
                         adapter.setFilteredNotes(filteredList);
                     }
@@ -101,21 +101,30 @@ public class FragmentOne extends Fragment implements ClickListener, LongClickLis
 
     @Override
     public void onItemClick(int position, View v) {
-        // TODO: change to fragment -> Miss passing info to frag 2
+
         System.out.println("click on item: " + adapter.getNotes().get(position).getTitle());
-        activitycontext.changefrag(new FragmentTwo());
+
+        FragmentTwo fr = new FragmentTwo();
+        Bundle arg = new Bundle();
+        id = adapter.getNotes().get(position).getId();
+        arg.putInt("id", id);
+        fr.setArguments(arg);
+
+        activityContext.changeFrag(fr);
     }
 
     @Override
     public void onLongItemClick(int position, View v) {
+        id = adapter.getNotes().get(position).getId();
         createNewTitleDeletePopUp();
         System.out.println("long click on item: " + adapter.getNotes().get(position).getTitle());
     }
 
     public void createNewTitleDeletePopUp(){
-        dialogBuilder = new AlertDialog.Builder(activitycontext);
+        dialogBuilder = new AlertDialog.Builder(activityContext);
         final View newTitleDeletePopUp = getLayoutInflater().inflate(R.layout.new_title_delete_popup, null);
         newNoteName = (EditText) newTitleDeletePopUp.findViewById(R.id.newNoteName);
+        newNoteName.setText(mViewModel.getNoteById(id).getTitle());
 
         deleteNote = (Button) newTitleDeletePopUp.findViewById(R.id.deleteButton);
         saveNewName = (Button) newTitleDeletePopUp.findViewById(R.id.editNameButton);
@@ -128,7 +137,13 @@ public class FragmentOne extends Fragment implements ClickListener, LongClickLis
         deleteNote.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // TODO: delete Note
+
+                mViewModel.deleteNote(id);
+
+                ArrayList<NoteDTO> newNotes = mViewModel.getNotes();
+                adapter.setNotes(newNotes);
+                adapter.setFilteredNotes(newNotes);
+
                 dialog.dismiss();
             }
         });
@@ -136,7 +151,51 @@ public class FragmentOne extends Fragment implements ClickListener, LongClickLis
         saveNewName.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //TODO: save new name to the note
+
+                newNoteName =(EditText) newTitleDeletePopUp.findViewById(R.id.newNoteName);
+                mViewModel.changeTitle(id, String.valueOf(newNoteName.getText()));
+
+                ArrayList<NoteDTO> newNotes = mViewModel.getNotes();
+                adapter.setNotes(newNotes);
+                adapter.setFilteredNotes(newNotes);
+
+                dialog.dismiss();
+            }
+        });
+
+        cancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+            }
+        });
+
+    }
+
+
+    public void createNewNotePopUp(){
+        dialogBuilder = new AlertDialog.Builder(activityContext);
+        final View newNotePopUp = getLayoutInflater().inflate(R.layout.new_note_popup, null);
+        newNoteName = (EditText) newNotePopUp.findViewById(R.id.newTitle);
+
+        saveNewName = (Button) newNotePopUp.findViewById(R.id.save);
+        cancel = (Button) newNotePopUp.findViewById(R.id.cancel);
+
+        dialogBuilder.setView(newNotePopUp);
+        dialog = dialogBuilder.create();
+        dialog.show();
+
+        saveNewName.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                newNoteName =(EditText) newNotePopUp.findViewById(R.id.newTitle);
+                mViewModel.addNote(String.valueOf(newNoteName.getText()));
+
+                ArrayList<NoteDTO> newNotes = mViewModel.getNotes();
+                adapter.setNotes(newNotes);
+                adapter.setFilteredNotes(newNotes);
+
                 dialog.dismiss();
             }
         });

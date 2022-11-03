@@ -48,6 +48,10 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ViewHolder> {
         return filteredNotes.size();
     }
 
+    public void setNotes(ArrayList<NoteDTO> notes) {
+        this.notes = notes;
+    }
+
     public  void setFilteredNotes(ArrayList<NoteDTO> filteredList){
         this.filteredNotes = filteredList;
         notifyDataSetChanged();

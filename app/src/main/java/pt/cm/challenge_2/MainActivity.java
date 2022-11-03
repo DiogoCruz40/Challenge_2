@@ -3,17 +3,20 @@ package pt.cm.challenge_2;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
+import androidx.lifecycle.ViewModelProvider;
 
 import android.os.Bundle;
 import android.view.MenuItem;
 
 
+import java.util.ArrayList;
 import java.util.List;
 
 import pt.cm.challenge_2.Interfaces.FragmentChange;
 import pt.cm.challenge_2.database.AppDatabase;
 import pt.cm.challenge_2.database.AppExecutors;
 import pt.cm.challenge_2.database.entities.Note;
+import pt.cm.challenge_2.dtos.NoteDTO;
 
 public class MainActivity extends AppCompatActivity implements FragmentChange {
 
@@ -34,6 +37,16 @@ public class MainActivity extends AppCompatActivity implements FragmentChange {
         fm.beginTransaction()
                 .add(R.id.targetcontainer, new FragmentOne())
                 .commit();
+
+        // TODO: import from data base <3
+
+        ArrayList<NoteDTO> notes = new ArrayList<NoteDTO>();
+        notes.add(new NoteDTO(1, "note1", "hello"));
+        notes.add(new NoteDTO(2, "note2", "hello"));
+        notes.add(new NoteDTO(3, "note3", "hello"));
+
+        SharedViewModel model  = new ViewModelProvider(this).get(SharedViewModel.class);
+        model.setNotes(notes);
     }
 
     @Override
@@ -42,6 +55,7 @@ public class MainActivity extends AppCompatActivity implements FragmentChange {
     }
 
     private void retrieveTasks() {
+        //TODO: cenas
         // This is how to instantiate a new thread
         AppExecutors.getInstance().diskIO().execute(new Runnable() {
             @Override
@@ -52,7 +66,7 @@ public class MainActivity extends AppCompatActivity implements FragmentChange {
                     @Override
                     public void run() {
                         // Running actions
-//                      mAdapter.setTasks(persons);
+                        // mAdapter.setTasks(persons);
                     }
                 });
             }
@@ -60,7 +74,16 @@ public class MainActivity extends AppCompatActivity implements FragmentChange {
     }
 
     @Override
-    public void changefrag(Fragment fragment) {
+    public void changeFrag(Fragment fragment) {
+        fm.beginTransaction().replace(R.id.targetcontainer, fragment).addToBackStack(null).commit();
+    }
+
+    public void saveAndChangeFrag(Fragment fragment){
+        FragmentTwo fragment2 = (FragmentTwo) fm.findFragmentById(R.id.targetcontainer);
+
+        assert fragment2 != null;
+        fragment2.saveAndChangeFrag();
+
         fm.beginTransaction().replace(R.id.targetcontainer, fragment).addToBackStack(null).commit();
     }
 
@@ -73,17 +96,28 @@ public class MainActivity extends AppCompatActivity implements FragmentChange {
         }
     }
 
+    public void addNote(){
+        FragmentOne fragment1 = (FragmentOne) fm.findFragmentById(R.id.targetcontainer);
+
+        assert fragment1 != null;
+        fragment1.createNewNotePopUp();
+
+        fm.beginTransaction().replace(R.id.targetcontainer, new FragmentOne()).addToBackStack(null).commit();
+    }
+
     //Insert here the operations in which menu button
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle item selection
         switch (item.getItemId()) {
             case R.id.closemenu:
-                changefrag(new FragmentOne());
+                changeFrag(new FragmentOne());
                 return true;
             case R.id.plusmenu:
+                addNote();
                 return true;
             case R.id.savemenu:
+                saveAndChangeFrag(new FragmentOne());
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
