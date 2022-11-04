@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import pt.cm.challenge_2.Interfaces.FragmentChange;
+import pt.cm.challenge_2.Interfaces.NoteMapperInterface;
 import pt.cm.challenge_2.database.AppDatabase;
 import pt.cm.challenge_2.database.entities.Note;
 import pt.cm.challenge_2.dtos.NoteDTO;
@@ -63,7 +64,8 @@ public class MainActivity extends AppCompatActivity implements FragmentChange {
             @Override
             public void run() {
                 // how to get all notes
-                List<NoteDTO> notesDTO = new NoteMapper().toNotesDTO(mDb.notesDAO().getAll());
+                NoteMapperInterface noteMapperInterface = new NoteMapper();
+                List<NoteDTO> notesDTO = noteMapperInterface.toNotesDTO(mDb.notesDAO().getAll());
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
