@@ -9,6 +9,7 @@ import android.widget.TextView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import pt.cm.challenge_2.Interfaces.ClickListener;
 import pt.cm.challenge_2.Interfaces.LongClickListener;
@@ -17,13 +18,13 @@ import pt.cm.challenge_2.dtos.NoteDTO;
 
 
 public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ViewHolder> {
-    private ArrayList<NoteDTO> notes;
-    private ArrayList<NoteDTO> filteredNotes;
+    private List<NoteDTO> notes;
+    private List<NoteDTO> filteredNotes;
     private ClickListener mClickListener;
     private LongClickListener mLongClickListener;
 
     // RecyclerView recyclerView;
-    public ListAdapter(ArrayList<NoteDTO> notes, ClickListener clickListener, LongClickListener longClickListener) {
+    public ListAdapter(List<NoteDTO> notes, ClickListener clickListener, LongClickListener longClickListener) {
         this.notes = notes;
         this.filteredNotes = notes;
         this.mClickListener = clickListener;
@@ -45,19 +46,19 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ViewHolder> {
 
     @Override
     public int getItemCount() {
-        return filteredNotes.size();
+        return filteredNotes != null ? filteredNotes.size() : 0;
     }
 
-    public void setNotes(ArrayList<NoteDTO> notes) {
+    public void setNotes(List<NoteDTO> notes) {
         this.notes = notes;
     }
 
-    public  void setFilteredNotes(ArrayList<NoteDTO> filteredList){
+    public  void setFilteredNotes(List<NoteDTO> filteredList){
         this.filteredNotes = filteredList;
         notifyDataSetChanged();
     }
 
-    public ArrayList<NoteDTO> getNotes() {
+    public List<NoteDTO> getNotes() {
         return notes;
     }
 

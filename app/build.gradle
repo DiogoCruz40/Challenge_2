@@ -4,12 +4,12 @@ plugins {
 
 android {
     namespace 'pt.cm.challenge_2'
-    compileSdk 32
+    compileSdk 33
 
     defaultConfig {
         applicationId "pt.cm.challenge_2"
-        minSdk 21
-        targetSdk 32
+        minSdk 24
+        targetSdk 33
         versionCode 1
         versionName "1.0"
 
@@ -29,6 +29,8 @@ android {
 }
 
 dependencies {
+    implementation 'org.modelmapper:modelmapper:3.0.0'
+
     implementation "androidx.room:room-runtime:2.4.3"
     annotationProcessor "androidx.room:room-compiler:2.4.3"
 
@@ -45,10 +47,10 @@ dependencies {
     testImplementation "androidx.room:room-testing:2.4.3"
 
     // optional - Paging 3 Integration
-    implementation "androidx.room:room-paging:2.4.1"
+    implementation "androidx.room:room-paging:2.4.3"
 
     implementation 'androidx.appcompat:appcompat:1.5.1'
-    implementation 'com.google.android.material:material:1.6.1'
+    implementation 'com.google.android.material:material:1.7.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
     implementation 'androidx.lifecycle:lifecycle-livedata-ktx:2.5.1'

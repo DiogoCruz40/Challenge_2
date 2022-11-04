@@ -24,7 +24,7 @@ public interface NotesDAO {
     void updateTitle(int id_nota, String newtitle);
 
     @Insert
-    void insertAll(Note... note);
+    void insertAll(List<Note> notes);
 
     @Delete
     void delete(Note note);

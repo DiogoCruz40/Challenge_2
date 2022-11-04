@@ -4,20 +4,20 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
-import pt.cm.challenge_2.database.AppExecutors;
 import pt.cm.challenge_2.dtos.NoteDTO;
 
 public class SharedViewModel extends ViewModel {
 
-    private final MutableLiveData<ArrayList<NoteDTO>> notes = new MutableLiveData<ArrayList<NoteDTO>>();
+    private final MutableLiveData<List<NoteDTO>> notes = new MutableLiveData<List<NoteDTO>>();
 
-    public void setNotes (ArrayList<NoteDTO> notes){
+    public void setNotes (List<NoteDTO> notes){
         this.notes.setValue(notes);
     }
 
-    public ArrayList<NoteDTO> getNotes(){
+    public List<NoteDTO> getNotes(){
         return this.notes.getValue();
     }
 
@@ -25,7 +25,7 @@ public class SharedViewModel extends ViewModel {
         for (NoteDTO n: Objects.requireNonNull(this.notes.getValue()))
         {
             if(n.getId() == id){
-                return n.getNote();
+                return n.getDescription();
             }
         }
         return null;
@@ -43,7 +43,7 @@ public class SharedViewModel extends ViewModel {
 
     public void addNote (String title){
 
-        ArrayList<NoteDTO> notesAux = this.notes.getValue();
+        List<NoteDTO> notesAux = this.notes.getValue();
 
         //TODO: Definir na BD e buscar o id
         NoteDTO note = new NoteDTO(4, title, "");
@@ -75,7 +75,7 @@ public class SharedViewModel extends ViewModel {
         {
             if(n.getId() == id){
                 //TODO: atualizar na BD
-                n.setNote(note);
+                n.setDescription(note);
                 break;
             }
         }
@@ -95,7 +95,7 @@ public class SharedViewModel extends ViewModel {
     public void deleteNote (int id){
 
         //TODO: atualizar na BD
-        ArrayList<NoteDTO> notesAux = this.notes.getValue();
+        List<NoteDTO> notesAux = this.notes.getValue();
         NoteDTO note = getNoteById(id);
         assert notesAux != null;
         notesAux.remove(note);

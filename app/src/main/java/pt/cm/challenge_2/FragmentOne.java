@@ -22,6 +22,7 @@ import android.widget.SearchView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import pt.cm.challenge_2.Interfaces.ClickListener;
 import pt.cm.challenge_2.Interfaces.LongClickListener;
@@ -50,8 +51,8 @@ public class FragmentOne extends Fragment implements ClickListener, LongClickLis
         activityContext = (MainActivity) inflater.getContext();
         RecyclerView recyclerView = (RecyclerView) view.findViewById(R.id.notes);
 
-        this.mViewModel = new ViewModelProvider(getActivity()).get(SharedViewModel.class);
-        ArrayList<NoteDTO> notes = mViewModel.getNotes();
+        this.mViewModel = new ViewModelProvider(activityContext).get(SharedViewModel.class);
+        List<NoteDTO> notes = mViewModel.getNotes();
 
         adapter = new ListAdapter(notes, this::onItemClick, this::onLongItemClick);
         recyclerView.setHasFixedSize(true);
@@ -75,7 +76,7 @@ public class FragmentOne extends Fragment implements ClickListener, LongClickLis
 
             @Override
             public boolean onQueryTextChange(String s) {
-                ArrayList<NoteDTO> notes = adapter.getNotes();
+                List<NoteDTO> notes = adapter.getNotes();
                 if (s.length()!=0) {
                     ArrayList<NoteDTO> filteredList = new ArrayList<NoteDTO>();
                     for (NoteDTO n : notes) {
@@ -140,7 +141,7 @@ public class FragmentOne extends Fragment implements ClickListener, LongClickLis
 
                 mViewModel.deleteNote(id);
 
-                ArrayList<NoteDTO> newNotes = mViewModel.getNotes();
+                List<NoteDTO> newNotes = mViewModel.getNotes();
                 adapter.setNotes(newNotes);
                 adapter.setFilteredNotes(newNotes);
 
@@ -155,7 +156,7 @@ public class FragmentOne extends Fragment implements ClickListener, LongClickLis
                 newNoteName =(EditText) newTitleDeletePopUp.findViewById(R.id.newNoteName);
                 mViewModel.changeTitle(id, String.valueOf(newNoteName.getText()));
 
-                ArrayList<NoteDTO> newNotes = mViewModel.getNotes();
+                List<NoteDTO> newNotes = mViewModel.getNotes();
                 adapter.setNotes(newNotes);
                 adapter.setFilteredNotes(newNotes);
 
@@ -192,7 +193,7 @@ public class FragmentOne extends Fragment implements ClickListener, LongClickLis
                 newNoteName =(EditText) newNotePopUp.findViewById(R.id.newTitle);
                 mViewModel.addNote(String.valueOf(newNoteName.getText()));
 
-                ArrayList<NoteDTO> newNotes = mViewModel.getNotes();
+                List<NoteDTO> newNotes = mViewModel.getNotes();
                 adapter.setNotes(newNotes);
                 adapter.setFilteredNotes(newNotes);
 

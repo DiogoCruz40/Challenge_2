@@ -14,9 +14,9 @@ import java.util.List;
 
 import pt.cm.challenge_2.Interfaces.FragmentChange;
 import pt.cm.challenge_2.database.AppDatabase;
-import pt.cm.challenge_2.database.AppExecutors;
 import pt.cm.challenge_2.database.entities.Note;
 import pt.cm.challenge_2.dtos.NoteDTO;
+import pt.cm.challenge_2.mappers.NoteMapper;
 
 public class MainActivity extends AppCompatActivity implements FragmentChange {
 
@@ -24,6 +24,7 @@ public class MainActivity extends AppCompatActivity implements FragmentChange {
 //    private PersonAdaptor mAdapter;
     private AppDatabase mDb;
     private FragmentManager fm;
+    SharedViewModel model;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,34 +40,35 @@ public class MainActivity extends AppCompatActivity implements FragmentChange {
                 .commit();
 
         // TODO: import from data base <3
+//
+//        ArrayList<NoteDTO> notes = new ArrayList<NoteDTO>();
+//        notes.add(new NoteDTO(1, "note1", "hello"));
+//        notes.add(new NoteDTO(2, "note2", "hello"));
+//        notes.add(new NoteDTO(3, "note3", "hello"));
 
-        ArrayList<NoteDTO> notes = new ArrayList<NoteDTO>();
-        notes.add(new NoteDTO(1, "note1", "hello"));
-        notes.add(new NoteDTO(2, "note2", "hello"));
-        notes.add(new NoteDTO(3, "note3", "hello"));
-
-        SharedViewModel model  = new ViewModelProvider(this).get(SharedViewModel.class);
-        model.setNotes(notes);
+        model  = new ViewModelProvider(this).get(SharedViewModel.class);
+        initialTasks();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
+        initialTasks();
     }
 
-    private void retrieveTasks() {
+    private void initialTasks() {
         //TODO: cenas
         // This is how to instantiate a new thread
         AppExecutors.getInstance().diskIO().execute(new Runnable() {
             @Override
             public void run() {
                 // how to get all notes
-                final List<Note> notes = mDb.notesDAO().getAll();
+                List<NoteDTO> notesDTO = new NoteMapper().toNotesDTO(mDb.notesDAO().getAll());
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
                         // Running actions
-                        // mAdapter.setTasks(persons);
+                        model.setNotes(notesDTO);
                     }
                 });
             }

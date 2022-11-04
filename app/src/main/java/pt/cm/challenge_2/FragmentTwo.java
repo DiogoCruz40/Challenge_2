@@ -13,6 +13,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 
+import pt.cm.challenge_2.Interfaces.FragmentChange;
 import pt.cm.challenge_2.dtos.NoteDTO;
 
 
@@ -37,7 +38,7 @@ public class FragmentTwo extends Fragment {
         setHasOptionsMenu(true);
         activityContext = (MainActivity) inflater.getContext();
 
-        this.mViewModel = new ViewModelProvider(getActivity()).get(SharedViewModel.class);
+        this.mViewModel = new ViewModelProvider(activityContext).get(SharedViewModel.class);
 
         if (getArguments() != null) {
             id = getArguments().getInt("id");

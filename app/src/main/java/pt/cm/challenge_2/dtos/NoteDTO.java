@@ -3,12 +3,12 @@ package pt.cm.challenge_2.dtos;
 public class NoteDTO {
     private int id;
     private String title;
-    private String note;
+    private String description;
 
-    public NoteDTO(int id, String title, String note) {
+    public NoteDTO(int id, String title, String description) {
         this.id = id;
         this.title = title;
-        this.note = note;
+        this.description = description;
     }
 
     public String getTitle() {
@@ -27,9 +27,9 @@ public class NoteDTO {
         this.title = title;
     }
 
-    public String getNote() { return note; }
+    public String getDescription() { return description; }
 
-    public void setNote(String note) {
-        this.note = note;
+    public void setDescription(String description) {
+        this.description = description;
     }
 }

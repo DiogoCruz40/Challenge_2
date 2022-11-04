@@ -1,4 +1,4 @@
-package pt.cm.challenge_2.database;
+package pt.cm.challenge_2;
 
 import android.os.Handler;
 import android.os.Looper;
