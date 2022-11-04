@@ -21,8 +21,6 @@ import pt.cm.challenge_2.mappers.NoteMapper;
 
 public class MainActivity extends AppCompatActivity implements FragmentChange {
 
-    //private RecyclerView mRecyclerView;
-//    private PersonAdaptor mAdapter;
     private AppDatabase mDb;
     private FragmentManager fm;
     SharedViewModel model;
@@ -40,7 +38,6 @@ public class MainActivity extends AppCompatActivity implements FragmentChange {
                 .add(R.id.targetcontainer, new FragmentOne())
                 .commit();
 
-        // TODO: import from data base <3
 //
 //        ArrayList<NoteDTO> notes = new ArrayList<NoteDTO>();
 //        notes.add(new NoteDTO(1, "note1", "hello"));
@@ -58,7 +55,6 @@ public class MainActivity extends AppCompatActivity implements FragmentChange {
     }
 
     private void initialTasks() {
-        //TODO: cenas
         // This is how to instantiate a new thread
         AppExecutors.getInstance().diskIO().execute(new Runnable() {
             @Override

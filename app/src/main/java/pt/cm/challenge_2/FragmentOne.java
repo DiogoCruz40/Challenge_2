@@ -78,7 +78,7 @@ public class FragmentOne extends Fragment implements ClickListener, LongClickLis
             public boolean onQueryTextChange(String s) {
                 List<NoteDTO> notes = adapter.getNotes();
                 if (s.length()!=0) {
-                    ArrayList<NoteDTO> filteredList = new ArrayList<NoteDTO>();
+                    List<NoteDTO> filteredList = new ArrayList<NoteDTO>();
                     for (NoteDTO n : notes) {
                         if (n.getTitle().toLowerCase().contains(s.toLowerCase())) {
                             filteredList.add(n);
