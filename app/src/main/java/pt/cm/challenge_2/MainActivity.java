@@ -37,10 +37,10 @@ public class MainActivity extends AppCompatActivity implements FragmentChange {
                 .add(R.id.targetcontainer, new FragmentOne())
                 .commit();
 
-        ArrayList<NoteDTO> notes = new ArrayList<NoteDTO>();
-        notes.add(new NoteDTO("note1", "hello1"));
-        notes.add(new NoteDTO("note2", "hello2"));
-        notes.add(new NoteDTO("note3", "hello3"));
+//        ArrayList<NoteDTO> notes = new ArrayList<NoteDTO>();
+//        notes.add(new NoteDTO("note1", "hello1"));
+//        notes.add(new NoteDTO("note2", "hello2"));
+//        notes.add(new NoteDTO("note3", "hello3"));
 
         AppExecutors.getInstance().diskIO().execute(new Runnable() {
             @Override
@@ -49,17 +49,12 @@ public class MainActivity extends AppCompatActivity implements FragmentChange {
                 NoteMapperInterface noteMapperInterface = new NoteMapper();
 
                 Note teste = noteMapperInterface.toEntityNote(new NoteDTO("note4", "hello4"));
+//                assert teste.description != null;
+
                 System.out.println(teste.title);
 
-                Note teste2 = new Note();
-                teste2.title = "teste2";
-                teste2.description = "teste2";
-                teste2.id_note = 2;
-
-                NoteDTO teste2DTO = noteMapperInterface.toNoteDTO(teste2);
-
-                List<Note> notesEntity = noteMapperInterface.toEntityNotes(notes);
-                mDb.notesDAO().insertAll(notesEntity);
+//                List<Note> notesEntity = noteMapperInterface.toEntityNotes(notes);
+//                mDb.notesDAO().insertAll(notesEntity);
 
                 runOnUiThread(new Runnable() {
                     @Override
@@ -72,13 +67,13 @@ public class MainActivity extends AppCompatActivity implements FragmentChange {
         });
 
         model  = new ViewModelProvider(this).get(SharedViewModel.class);
-        initialTasks();
+//        initialTasks();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        initialTasks();
+//        initialTasks();
     }
 
     private void initialTasks() {

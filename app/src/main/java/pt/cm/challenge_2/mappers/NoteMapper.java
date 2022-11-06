@@ -1,6 +1,9 @@
 package pt.cm.challenge_2.mappers;
 
+import static pt.cm.challenge_2.mappers.MapperUtil.getMapper;
+
 import org.modelmapper.ModelMapper;
+import org.modelmapper.config.Configuration;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,8 +16,8 @@ import pt.cm.challenge_2.dtos.NoteDTO;
 
 public class NoteMapper implements NoteMapperInterface {
 
+    ModelMapper modelMapper = getMapper();
 
-    ModelMapper modelMapper = new ModelMapper();
     private <S, T> List<T> mapList(List<S> source, Class<T> targetClass) {
         return source
                 .stream()
