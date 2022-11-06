@@ -1,12 +1,12 @@
 package pt.cm.challenge_2.dtos;
 
 public class NoteDTO {
+
     private int id;
     private String title;
     private String description;
 
-    public NoteDTO(int id, String title, String description) {
-        this.id = id;
+    public NoteDTO(String title, String description) {
         this.title = title;
         this.description = description;
     }

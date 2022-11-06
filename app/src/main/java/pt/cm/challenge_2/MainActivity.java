@@ -8,7 +8,6 @@ import androidx.lifecycle.ViewModelProvider;
 import android.os.Bundle;
 import android.view.MenuItem;
 
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -38,11 +37,39 @@ public class MainActivity extends AppCompatActivity implements FragmentChange {
                 .add(R.id.targetcontainer, new FragmentOne())
                 .commit();
 
-//
-//        ArrayList<NoteDTO> notes = new ArrayList<NoteDTO>();
-//        notes.add(new NoteDTO(1, "note1", "hello"));
-//        notes.add(new NoteDTO(2, "note2", "hello"));
-//        notes.add(new NoteDTO(3, "note3", "hello"));
+        ArrayList<NoteDTO> notes = new ArrayList<NoteDTO>();
+        notes.add(new NoteDTO("note1", "hello1"));
+        notes.add(new NoteDTO("note2", "hello2"));
+        notes.add(new NoteDTO("note3", "hello3"));
+
+        AppExecutors.getInstance().diskIO().execute(new Runnable() {
+            @Override
+            public void run() {
+                // how to get all notes
+                NoteMapperInterface noteMapperInterface = new NoteMapper();
+
+                Note teste = noteMapperInterface.toEntityNote(new NoteDTO("note4", "hello4"));
+                System.out.println(teste.title);
+
+                Note teste2 = new Note();
+                teste2.title = "teste2";
+                teste2.description = "teste2";
+                teste2.id_note = 2;
+
+                NoteDTO teste2DTO = noteMapperInterface.toNoteDTO(teste2);
+
+                List<Note> notesEntity = noteMapperInterface.toEntityNotes(notes);
+                mDb.notesDAO().insertAll(notesEntity);
+
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        // Running actions
+                        //model.setNotes(notesDTO);
+                    }
+                });
+            }
+        });
 
         model  = new ViewModelProvider(this).get(SharedViewModel.class);
         initialTasks();
@@ -71,6 +98,77 @@ public class MainActivity extends AppCompatActivity implements FragmentChange {
                 });
             }
         });
+    }
+
+    private void addNoteDB(NoteDTO noteDTO) {
+        AppExecutors.getInstance().diskIO().execute(new Runnable() {
+            @Override
+            public void run() {
+                // how to add a new note
+                NoteMapperInterface noteMapperInterface = new NoteMapper();
+                Note note = noteMapperInterface.toEntityNote(noteDTO);
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        mDb.notesDAO().insertNote(note);
+                    }
+                });
+            }
+        });
+    }
+
+    private void deleteNoteDB(NoteDTO noteDTO) {
+        AppExecutors.getInstance().diskIO().execute(new Runnable() {
+            @Override
+            public void run() {
+                // how to add a new note
+                NoteMapperInterface noteMapperInterface = new NoteMapper();
+                Note note = noteMapperInterface.toEntityNote(noteDTO);
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        mDb.notesDAO().delete(note);
+                    }
+                });
+            }
+        });
+    }
+
+    private void updateTitleNoteDB(NoteDTO noteDTO) {
+        AppExecutors.getInstance().diskIO().execute(new Runnable() {
+            @Override
+            public void run() {
+                // how to update title of a note
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        mDb.notesDAO().updateTitle(noteDTO.getId(), noteDTO.getTitle());
+                    }
+                });
+            }
+        });
+    }
+
+    private void updateNoteDB(NoteDTO noteDTO) {
+        AppExecutors.getInstance().diskIO().execute(new Runnable() {
+            @Override
+            public void run() {
+                // how to update title of a note
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        mDb.notesDAO().updateNote(noteDTO.getId(), noteDTO.getDescription());
+                    }
+                });
+            }
+        });
+    }
+
+    public void teste(String request, Class target){
+        //SharedViewModel.class
+        System.out.println(Class.class);
+        //teste("teste", SharedViewModel.class);
+        return;
     }
 
     @Override

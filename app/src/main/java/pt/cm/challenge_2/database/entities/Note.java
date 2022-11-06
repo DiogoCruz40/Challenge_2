@@ -1,6 +1,5 @@
 package pt.cm.challenge_2.database.entities;
 
-
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;

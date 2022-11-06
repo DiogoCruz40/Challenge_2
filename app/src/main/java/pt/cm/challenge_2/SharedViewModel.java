@@ -7,7 +7,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+import pt.cm.challenge_2.Interfaces.NoteMapperInterface;
+import pt.cm.challenge_2.database.AppDatabase;
 import pt.cm.challenge_2.dtos.NoteDTO;
+import pt.cm.challenge_2.mappers.NoteMapper;
 
 public class SharedViewModel extends ViewModel {
 
@@ -46,7 +49,7 @@ public class SharedViewModel extends ViewModel {
         List<NoteDTO> notesAux = this.notes.getValue();
 
         //TODO: Definir na BD e buscar o id
-        NoteDTO note = new NoteDTO(4, title, "");
+        NoteDTO note = new NoteDTO(title, "");
 
         notesAux.add(note);
 
