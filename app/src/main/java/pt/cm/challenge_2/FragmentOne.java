@@ -52,12 +52,12 @@ public class FragmentOne extends Fragment implements ClickListener, LongClickLis
         RecyclerView recyclerView = (RecyclerView) view.findViewById(R.id.notes);
 
         this.mViewModel = new ViewModelProvider(activityContext).get(SharedViewModel.class);
-        List<NoteDTO> notes = mViewModel.getNotes();
-
-        adapter = new ListAdapter(notes, this::onItemClick, this::onLongItemClick);
-        recyclerView.setHasFixedSize(true);
-        recyclerView.setLayoutManager(new LinearLayoutManager(inflater.getContext()));
-        recyclerView.setAdapter(adapter);
+        mViewModel.getNotes().observe(getViewLifecycleOwner(), notes -> {
+           adapter = new ListAdapter(notes, this::onItemClick, this::onLongItemClick);
+           recyclerView.setHasFixedSize(true);
+           recyclerView.setLayoutManager(new LinearLayoutManager(inflater.getContext()));
+           recyclerView.setAdapter(adapter);
+       });
 
         return view;
     }
@@ -67,7 +67,7 @@ public class FragmentOne extends Fragment implements ClickListener, LongClickLis
         inflater.inflate(R.menu.menu_frag_one, menu);
         MenuItem menuItem = menu.findItem(R.id.searchbar);
         SearchView searchView = (SearchView) menuItem.getActionView();
-        searchView.setQueryHint("Type here to search");
+        searchView.setQueryHint("Type here to search"); //TODO: bug - qd procuramos uma note e clicamos em cima dela mostra o conteudo da nota que estava la antes da procura
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String s) {
@@ -141,10 +141,6 @@ public class FragmentOne extends Fragment implements ClickListener, LongClickLis
 
                 mViewModel.deleteNote(id);
 
-                List<NoteDTO> newNotes = mViewModel.getNotes();
-                adapter.setNotes(newNotes);
-                adapter.setFilteredNotes(newNotes);
-
                 dialog.dismiss();
             }
         });
@@ -155,10 +151,6 @@ public class FragmentOne extends Fragment implements ClickListener, LongClickLis
 
                 newNoteName =(EditText) newTitleDeletePopUp.findViewById(R.id.newNoteName);
                 mViewModel.changeTitle(id, String.valueOf(newNoteName.getText()));
-
-                List<NoteDTO> newNotes = mViewModel.getNotes();
-                adapter.setNotes(newNotes);
-                adapter.setFilteredNotes(newNotes);
 
                 dialog.dismiss();
             }
@@ -192,10 +184,6 @@ public class FragmentOne extends Fragment implements ClickListener, LongClickLis
 
                 newNoteName =(EditText) newNotePopUp.findViewById(R.id.newTitle);
                 mViewModel.addNote(String.valueOf(newNoteName.getText()));
-
-                List<NoteDTO> newNotes = mViewModel.getNotes();
-                adapter.setNotes(newNotes);
-                adapter.setFilteredNotes(newNotes);
 
                 dialog.dismiss();
             }

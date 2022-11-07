@@ -2,6 +2,7 @@ package pt.cm.challenge_2.database.daos;
 
 import androidx.room.Dao;
 import androidx.room.Delete;
+import androidx.room.DeleteTable;
 import androidx.room.Insert;
 import androidx.room.Query;
 
@@ -34,4 +35,8 @@ public interface NotesDAO {
 
     @Delete
     void delete(Note note);
+
+    @Query("DELETE FROM notes WHERE id_note = :id_nota")
+    void delete(int id_nota);
+
 }
