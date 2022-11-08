@@ -26,11 +26,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import pt.cm.challenge_2.Interfaces.ActivityInterface;
-import pt.cm.challenge_2.Interfaces.ClickListener;
-import pt.cm.challenge_2.Interfaces.LongClickListener;
+import pt.cm.challenge_2.Interfaces.FragmentOneInterface;
 import pt.cm.challenge_2.dtos.NoteDTO;
 
-public class FragmentOne extends Fragment implements ClickListener, LongClickListener {
+public class FragmentOne extends Fragment implements FragmentOneInterface {
 
     private SharedViewModel mViewModel;
     private ListAdapter adapter;
@@ -59,7 +58,7 @@ public class FragmentOne extends Fragment implements ClickListener, LongClickLis
         this.mViewModel = new ViewModelProvider(activityInterface.getmainactivity()).get(SharedViewModel.class);
         mViewModel.getNotes().observe(getViewLifecycleOwner(), notes -> {
             RecyclerView recyclerView = (RecyclerView) view.findViewById(R.id.notes);
-           adapter = new ListAdapter(notes, this::onItemClick, this::onLongItemClick);
+           adapter = new ListAdapter(notes, this);
            recyclerView.setHasFixedSize(true);
            recyclerView.setLayoutManager(new LinearLayoutManager(inflater.getContext()));
            recyclerView.setAdapter(adapter);

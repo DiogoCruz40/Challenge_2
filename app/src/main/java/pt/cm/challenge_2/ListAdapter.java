@@ -8,34 +8,29 @@ import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
 
-import java.util.ArrayList;
 import java.util.List;
 
-import pt.cm.challenge_2.Interfaces.ClickListener;
-import pt.cm.challenge_2.Interfaces.LongClickListener;
-import pt.cm.challenge_2.database.entities.Note;
+import pt.cm.challenge_2.Interfaces.FragmentOneInterface;
 import pt.cm.challenge_2.dtos.NoteDTO;
 
 
 public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ViewHolder> {
     private List<NoteDTO> notes;
     private List<NoteDTO> filteredNotes;
-    private ClickListener mClickListener;
-    private LongClickListener mLongClickListener;
+    private FragmentOneInterface fragmentOneInterface;
 
     // RecyclerView recyclerView;
-    public ListAdapter(List<NoteDTO> notes, ClickListener clickListener, LongClickListener longClickListener) {
+    public ListAdapter(List<NoteDTO> notes, FragmentOneInterface fragmentOneInterface) {
         this.notes = notes;
         this.filteredNotes = notes;
-        this.mClickListener = clickListener;
-        this.mLongClickListener = longClickListener;
+        this.fragmentOneInterface = fragmentOneInterface;
     }
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         LayoutInflater layoutInflater = LayoutInflater.from(parent.getContext());
         View listItem = layoutInflater.inflate(R.layout.list_item, parent, false);
-        return new ViewHolder(listItem, mClickListener, mLongClickListener);
+        return new ViewHolder(listItem, fragmentOneInterface);
     }
 
     @Override
@@ -69,15 +64,13 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ViewHolder> {
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener, View.OnLongClickListener {
         public TextView textView;
         public RelativeLayout relativeLayout;
-        ClickListener clickListener;
-        LongClickListener longClickListener;
+        FragmentOneInterface fragmentOneInterface;
 
-        public ViewHolder(View itemView, ClickListener clickListener, LongClickListener longClickListener) {
+        public ViewHolder(View itemView, FragmentOneInterface fragmentOneInterface) {
             super(itemView);
             this.textView = (TextView) itemView.findViewById(R.id.textView);
             relativeLayout = (RelativeLayout) itemView.findViewById(R.id.relativeLayout);
-            this.clickListener = clickListener;
-            this.longClickListener = longClickListener;
+            this.fragmentOneInterface = fragmentOneInterface;
 
             itemView.setOnClickListener(this::onClick);
             itemView.setOnLongClickListener(this::onLongClick);
@@ -86,12 +79,12 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ViewHolder> {
 
         @Override
         public void onClick(View view) {
-            clickListener.onItemClick(getAdapterPosition(), view);
+            fragmentOneInterface.onItemClick(getAdapterPosition(), view);
         }
 
         @Override
         public boolean onLongClick(View view) {
-            longClickListener.onLongItemClick(getAdapterPosition(), view);
+            fragmentOneInterface.onLongItemClick(getAdapterPosition(), view);
             return true;
         }
     }
