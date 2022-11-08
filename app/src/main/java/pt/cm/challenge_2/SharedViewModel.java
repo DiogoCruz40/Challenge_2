@@ -87,12 +87,14 @@ public class SharedViewModel extends AndroidViewModel {
                 new Handler(Looper.getMainLooper()).post(new Runnable() {
                     @Override
                     public void run() {
-                        for (NoteDTO n: Objects.requireNonNull(notes.getValue()))
-                        {
-                            if(n.getId() == id){
-                                n.setDescription(note);
-                                break;
-                            }
+                        List<NoteDTO> notesAux = notes.getValue();
+                        if(notesAux != null) {
+                            notesAux.forEach(noteDTO -> {
+                                if (noteDTO.getId() == id) {
+                                    noteDTO.setDescription(note);
+                                }
+                            });
+                            notes.setValue(notesAux);
                         }
                     }
                 });
@@ -110,13 +112,14 @@ public class SharedViewModel extends AndroidViewModel {
                 new Handler(Looper.getMainLooper()).post(new Runnable() {
                     @Override
                     public void run() {
-                        for (NoteDTO n: Objects.requireNonNull(notes.getValue()))
-                        {
-                            if(n.getId() == id){
-                                //TODO: bug - o titulo não muda logo, nec. dar set da lista inteira, mas eu nao quero fazer isso, por isso ver outra solucao!
-                                n.setTitle(title);
-                                break;
-                            }
+                        List<NoteDTO> notesAux = notes.getValue();
+                        if(notesAux != null) {
+                            notesAux.forEach(noteDTO -> {
+                                if (noteDTO.getId() == id) {
+                                    noteDTO.setTitle(title);
+                                }
+                            });
+                        notes.setValue(notesAux);
                         }
                     }
                 });
