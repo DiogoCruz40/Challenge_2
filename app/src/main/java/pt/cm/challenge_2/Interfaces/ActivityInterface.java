@@ -2,6 +2,9 @@ package pt.cm.challenge_2.Interfaces;
 
 import androidx.fragment.app.Fragment;
 
-public interface FragmentChange {
+import pt.cm.challenge_2.MainActivity;
+
+public interface ActivityInterface {
+    MainActivity getmainactivity();
     void changeFrag(Fragment fragment);
 }

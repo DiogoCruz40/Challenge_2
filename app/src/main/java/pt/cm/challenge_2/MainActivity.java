@@ -8,17 +8,9 @@ import androidx.lifecycle.ViewModelProvider;
 import android.os.Bundle;
 import android.view.MenuItem;
 
-import java.util.ArrayList;
-import java.util.List;
+import pt.cm.challenge_2.Interfaces.ActivityInterface;
 
-import pt.cm.challenge_2.Interfaces.FragmentChange;
-import pt.cm.challenge_2.Interfaces.NoteMapperInterface;
-import pt.cm.challenge_2.database.AppDatabase;
-import pt.cm.challenge_2.database.entities.Note;
-import pt.cm.challenge_2.dtos.NoteDTO;
-import pt.cm.challenge_2.mappers.NoteMapper;
-
-public class MainActivity extends AppCompatActivity implements FragmentChange {
+public class MainActivity extends AppCompatActivity implements ActivityInterface {
 
     private FragmentManager fm;
     SharedViewModel model;
@@ -93,5 +85,10 @@ public class MainActivity extends AppCompatActivity implements FragmentChange {
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    @Override
+    public MainActivity getmainactivity() {
+        return this;
     }
 }

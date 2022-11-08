@@ -1,25 +1,25 @@
 package pt.cm.challenge_2;
 
+import android.content.Context;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 
-import pt.cm.challenge_2.Interfaces.FragmentChange;
-import pt.cm.challenge_2.dtos.NoteDTO;
+import pt.cm.challenge_2.Interfaces.ActivityInterface;
 
 
 public class FragmentTwo extends Fragment {
 
-    private MainActivity activityContext;
+    private ActivityInterface activityInterface;
     private SharedViewModel mViewModel;
     private EditText editTextNote;
     private View view;
@@ -30,15 +30,22 @@ public class FragmentTwo extends Fragment {
     }
 
     @Override
+    public void onAttach(@NonNull Context context) {
+        super.onAttach(context);
+        activityInterface = (ActivityInterface) context;
+    }
+
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
         // Inflate the layout for this fragment
         view = inflater.inflate(R.layout.fragment_two, container, false);
         setHasOptionsMenu(true);
-        activityContext = (MainActivity) inflater.getContext();
 
-        this.mViewModel = new ViewModelProvider(activityContext).get(SharedViewModel.class);
+
+        this.mViewModel = new ViewModelProvider(activityInterface.getmainactivity()).get(SharedViewModel.class);
 
         if (getArguments() != null) {
             id = getArguments().getInt("id");

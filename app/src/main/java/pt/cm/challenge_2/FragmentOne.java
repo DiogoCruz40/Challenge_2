@@ -1,6 +1,7 @@
 package pt.cm.challenge_2;
 
 import android.app.AlertDialog;
+import android.content.Context;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -24,6 +25,7 @@ import android.widget.Toast;
 import java.util.ArrayList;
 import java.util.List;
 
+import pt.cm.challenge_2.Interfaces.ActivityInterface;
 import pt.cm.challenge_2.Interfaces.ClickListener;
 import pt.cm.challenge_2.Interfaces.LongClickListener;
 import pt.cm.challenge_2.dtos.NoteDTO;
@@ -32,7 +34,7 @@ public class FragmentOne extends Fragment implements ClickListener, LongClickLis
 
     private SharedViewModel mViewModel;
     private ListAdapter adapter;
-    private MainActivity activityContext;
+    private ActivityInterface activityInterface;
     private AlertDialog.Builder dialogBuilder;
     private AlertDialog dialog;
     private EditText newNoteName;
@@ -44,13 +46,17 @@ public class FragmentOne extends Fragment implements ClickListener, LongClickLis
     }
 
     @Override
+    public void onAttach(@NonNull Context context) {
+        super.onAttach(context);
+        activityInterface = (ActivityInterface) context;
+    }
+
+    @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_one, container, false);
         setHasOptionsMenu(true);
-        activityContext = (MainActivity) inflater.getContext();
-
-        this.mViewModel = new ViewModelProvider(activityContext).get(SharedViewModel.class);
+        this.mViewModel = new ViewModelProvider(activityInterface.getmainactivity()).get(SharedViewModel.class);
         mViewModel.getNotes().observe(getViewLifecycleOwner(), notes -> {
             RecyclerView recyclerView = (RecyclerView) view.findViewById(R.id.notes);
            adapter = new ListAdapter(notes, this::onItemClick, this::onLongItemClick);
@@ -85,7 +91,7 @@ public class FragmentOne extends Fragment implements ClickListener, LongClickLis
                         }
                     }
                     if (filteredList.isEmpty()) {
-                        Toast.makeText(activityContext, "No Results for your search", Toast.LENGTH_LONG).show();
+                        Toast.makeText(activityInterface.getmainactivity(), "No Results for your search", Toast.LENGTH_LONG).show();
                     } else {
                         adapter.setFilteredNotes(filteredList);
                     }
@@ -116,7 +122,7 @@ public class FragmentOne extends Fragment implements ClickListener, LongClickLis
         arg.putInt("id", id);
         fr.setArguments(arg);
 
-        activityContext.changeFrag(fr);
+        activityInterface.changeFrag(fr);
     }
 
     @Override
@@ -132,7 +138,7 @@ public class FragmentOne extends Fragment implements ClickListener, LongClickLis
     }
 
     public void createNewTitleDeletePopUp(){
-        dialogBuilder = new AlertDialog.Builder(activityContext);
+        dialogBuilder = new AlertDialog.Builder(activityInterface.getmainactivity());
         final View newTitleDeletePopUp = getLayoutInflater().inflate(R.layout.new_title_delete_popup, null);
         newNoteName = (EditText) newTitleDeletePopUp.findViewById(R.id.newNoteName);
         newNoteName.setText(mViewModel.getNoteById(id).getTitle());
@@ -150,6 +156,7 @@ public class FragmentOne extends Fragment implements ClickListener, LongClickLis
             public void onClick(View v) {
 
                 mViewModel.deleteNote(id);
+                activityInterface.getmainactivity();
 
                 dialog.dismiss();
             }
@@ -177,7 +184,7 @@ public class FragmentOne extends Fragment implements ClickListener, LongClickLis
 
 
     public void createNewNotePopUp(){
-        dialogBuilder = new AlertDialog.Builder(activityContext);
+        dialogBuilder = new AlertDialog.Builder(activityInterface.getmainactivity());
         final View newNotePopUp = getLayoutInflater().inflate(R.layout.new_note_popup, null);
         newNoteName = (EditText) newNotePopUp.findViewById(R.id.newTitle);
 
