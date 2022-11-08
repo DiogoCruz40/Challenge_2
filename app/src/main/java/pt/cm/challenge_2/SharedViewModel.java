@@ -21,7 +21,7 @@ import pt.cm.challenge_2.mappers.NoteMapper;
 
 public class SharedViewModel extends AndroidViewModel {
 
-    private final MutableLiveData<List<NoteDTO>> notes = new MutableLiveData<List<NoteDTO>>();
+    private MutableLiveData<List<NoteDTO>> notes = new MutableLiveData<List<NoteDTO>>();
     private AppDatabase mDb;
 
     public SharedViewModel(@NonNull Application application) {
@@ -31,7 +31,7 @@ public class SharedViewModel extends AndroidViewModel {
     public void setNotes (List<NoteDTO> notes){
         this.notes.setValue(notes);
     }
-
+    
     public MutableLiveData<List<NoteDTO>> getNotes(){
         return this.notes;
     }

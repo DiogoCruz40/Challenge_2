@@ -51,6 +51,7 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ViewHolder> {
 
     public void setNotes(List<NoteDTO> notes) {
         this.notes = notes;
+        notifyDataSetChanged();
     }
 
     public  void setFilteredNotes(List<NoteDTO> filteredList){
@@ -58,6 +59,9 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ViewHolder> {
         notifyDataSetChanged();
     }
 
+    public List<NoteDTO> getFilteredNotes() {
+        return filteredNotes;
+    }
     public List<NoteDTO> getNotes() {
         return notes;
     }

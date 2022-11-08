@@ -20,7 +20,6 @@ import pt.cm.challenge_2.mappers.NoteMapper;
 
 public class MainActivity extends AppCompatActivity implements FragmentChange {
 
-    private AppDatabase mDb;
     private FragmentManager fm;
     SharedViewModel model;
 
@@ -28,34 +27,6 @@ public class MainActivity extends AppCompatActivity implements FragmentChange {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        // get database
-        mDb = AppDatabase.getInstance(getApplicationContext());
-
-        /*
-        ArrayList<NoteDTO> notes = new ArrayList<NoteDTO>();
-        notes.add(new NoteDTO("note1", "hello1"));
-        notes.add(new NoteDTO("note2", "hello2"));
-        notes.add(new NoteDTO("note3", "hello3"));
-
-        AppExecutors.getInstance().diskIO().execute(new Runnable() {
-            @Override
-            public void run() {
-                // how to get all notes
-                NoteMapperInterface noteMapperInterface = new NoteMapper();
-
-                List<Note> notesEntity = noteMapperInterface.toEntityNotes(notes);
-                mDb.notesDAO().insertAll(notesEntity);
-
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-
-                    }
-                });
-            }
-        });
-        */
 
         fm = getSupportFragmentManager();
         fm.beginTransaction()
@@ -70,6 +41,7 @@ public class MainActivity extends AppCompatActivity implements FragmentChange {
     @Override
     protected void onResume() {
         super.onResume();
+        model.startDB();
     }
 
     @Override

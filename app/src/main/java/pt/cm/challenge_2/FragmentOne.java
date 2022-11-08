@@ -49,10 +49,10 @@ public class FragmentOne extends Fragment implements ClickListener, LongClickLis
         View view = inflater.inflate(R.layout.fragment_one, container, false);
         setHasOptionsMenu(true);
         activityContext = (MainActivity) inflater.getContext();
-        RecyclerView recyclerView = (RecyclerView) view.findViewById(R.id.notes);
 
         this.mViewModel = new ViewModelProvider(activityContext).get(SharedViewModel.class);
         mViewModel.getNotes().observe(getViewLifecycleOwner(), notes -> {
+            RecyclerView recyclerView = (RecyclerView) view.findViewById(R.id.notes);
            adapter = new ListAdapter(notes, this::onItemClick, this::onLongItemClick);
            recyclerView.setHasFixedSize(true);
            recyclerView.setLayoutManager(new LinearLayoutManager(inflater.getContext()));
@@ -67,7 +67,7 @@ public class FragmentOne extends Fragment implements ClickListener, LongClickLis
         inflater.inflate(R.menu.menu_frag_one, menu);
         MenuItem menuItem = menu.findItem(R.id.searchbar);
         SearchView searchView = (SearchView) menuItem.getActionView();
-        searchView.setQueryHint("Type here to search"); //TODO: bug - qd procuramos uma note e clicamos em cima dela mostra o conteudo da nota que estava la antes da procura
+        searchView.setQueryHint("Type here to search"); 
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String s) {
@@ -103,11 +103,16 @@ public class FragmentOne extends Fragment implements ClickListener, LongClickLis
     @Override
     public void onItemClick(int position, View v) {
 
-        System.out.println("click on item: " + adapter.getNotes().get(position).getTitle());
+//        System.out.println("click on item: " + adapter.getNotes().get(position).getTitle());
 
         FragmentTwo fr = new FragmentTwo();
         Bundle arg = new Bundle();
+        if(adapter.getNotes().size() == adapter.getFilteredNotes().size())
         id = adapter.getNotes().get(position).getId();
+        else
+        {
+            id = adapter.getFilteredNotes().get(position).getId();
+        }
         arg.putInt("id", id);
         fr.setArguments(arg);
 
@@ -116,9 +121,14 @@ public class FragmentOne extends Fragment implements ClickListener, LongClickLis
 
     @Override
     public void onLongItemClick(int position, View v) {
-        id = adapter.getNotes().get(position).getId();
+        if(adapter.getNotes().size() == adapter.getFilteredNotes().size())
+            id = adapter.getNotes().get(position).getId();
+        else
+        {
+            id = adapter.getFilteredNotes().get(position).getId();
+        }
         createNewTitleDeletePopUp();
-        System.out.println("long click on item: " + adapter.getNotes().get(position).getTitle());
+//        System.out.println("long click on item: " + adapter.getNotes().get(position).getTitle());
     }
 
     public void createNewTitleDeletePopUp(){
