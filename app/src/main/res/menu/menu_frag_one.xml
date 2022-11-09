@@ -14,4 +14,8 @@
         android:icon="@android:drawable/ic_menu_add"
         android:title="@string/plusmenu"
         app:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/mqttmenu"
+        android:title="@string/mqtt_name"
+        app:showAsAction="ifRoom|withText" />
 </menu>
