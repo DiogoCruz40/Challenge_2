@@ -1,4 +1,4 @@
-package pt.cm.challenge_2;
+package pt.cm.challenge_2.helpers;
 
 import android.content.Context;
 import android.util.Log;
@@ -15,7 +15,7 @@ public class MQTTHelper {
     public MqttAndroidClient mqttAndroidClient;
 
     final String server = "tcp://broker.hivemq.com:1883"; //TODO - Place the IP here
-    final String TAG = "TAG"; //TODO - This is just for logs
+    final String TAG = "MQTT"; //TODO - This is just for logs
     private String name;
 
 
@@ -86,6 +86,26 @@ public class MQTTHelper {
 
         } catch (MqttException ex) {
             System.err.println("Exception subscribing");
+            ex.printStackTrace();
+        }
+    }
+
+    public void unsubscribeToTopic(String topic) {
+        try {
+            mqttAndroidClient.unsubscribe(topic,null, new IMqttActionListener() {
+                @Override
+                public void onSuccess(IMqttToken asyncActionToken) {
+                    Log.w(TAG, "Unsubscribed!");
+                }
+
+                @Override
+                public void onFailure(IMqttToken asyncActionToken, Throwable exception) {
+                    Log.w(TAG, "Unsubscribed fail!");
+                }
+            });
+
+        } catch (MqttException ex) {
+            System.err.println("Exception unsubscribing");
             ex.printStackTrace();
         }
     }
