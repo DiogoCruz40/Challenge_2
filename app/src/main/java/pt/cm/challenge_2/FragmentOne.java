@@ -18,8 +18,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Menu;
 import android.view.MenuInflater;
-import android.widget.Adapter;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -37,6 +35,7 @@ import java.util.List;
 
 import pt.cm.challenge_2.Interfaces.ActivityInterface;
 import pt.cm.challenge_2.Interfaces.FragmentOneInterface;
+import pt.cm.challenge_2.database.entities.Note;
 import pt.cm.challenge_2.dtos.NoteDTO;
 
 public class FragmentOne extends Fragment implements FragmentOneInterface {
@@ -46,9 +45,9 @@ public class FragmentOne extends Fragment implements FragmentOneInterface {
     private ActivityInterface activityInterface;
     private AlertDialog.Builder dialogBuilder;
     private AlertDialog dialog;
-    private Spinner spinnermqttpopup;
-    private EditText newNoteName, subscribetopic;
-    private Button deleteNote, saveNewName, cancel, subscribe, unsubscribe;
+    private Spinner spinnermqttpopup, spinnertopicshare;
+    private EditText newNoteName, subscribetopic, topicname;
+    private Button deleteNote, saveNewName, cancel, subscribe, unsubscribe, addtopic, removetopic, sharenote;
     private int id;
 
     public FragmentOne() {
@@ -69,11 +68,11 @@ public class FragmentOne extends Fragment implements FragmentOneInterface {
         this.mViewModel = new ViewModelProvider(activityInterface.getmainactivity()).get(SharedViewModel.class);
         mViewModel.getNotes().observe(getViewLifecycleOwner(), notes -> {
             RecyclerView recyclerView = (RecyclerView) view.findViewById(R.id.notes);
-           adapter = new ListAdapter(notes, this);
-           recyclerView.setHasFixedSize(true);
-           recyclerView.setLayoutManager(new LinearLayoutManager(inflater.getContext()));
-           recyclerView.setAdapter(adapter);
-       });
+            adapter = new ListAdapter(notes, this);
+            recyclerView.setHasFixedSize(true);
+            recyclerView.setLayoutManager(new LinearLayoutManager(inflater.getContext()));
+            recyclerView.setAdapter(adapter);
+        });
 
         return view;
     }
@@ -83,7 +82,7 @@ public class FragmentOne extends Fragment implements FragmentOneInterface {
         inflater.inflate(R.menu.menu_frag_one, menu);
         MenuItem menuItem = menu.findItem(R.id.searchbar);
         SearchView searchView = (SearchView) menuItem.getActionView();
-        searchView.setQueryHint("Type here to search"); 
+        searchView.setQueryHint("Type here to search");
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String s) {
@@ -93,7 +92,7 @@ public class FragmentOne extends Fragment implements FragmentOneInterface {
             @Override
             public boolean onQueryTextChange(String s) {
                 List<NoteDTO> notes = adapter.getNotes();
-                if (s.length()!=0) {
+                if (s.length() != 0) {
                     List<NoteDTO> filteredList = new ArrayList<NoteDTO>();
                     for (NoteDTO n : notes) {
                         if (n.getTitle().toLowerCase().contains(s.toLowerCase())) {
@@ -123,10 +122,9 @@ public class FragmentOne extends Fragment implements FragmentOneInterface {
 
         FragmentTwo fr = new FragmentTwo();
         Bundle arg = new Bundle();
-        if(adapter.getNotes().size() == adapter.getFilteredNotes().size())
-        id = adapter.getNotes().get(position).getId();
-        else
-        {
+        if (adapter.getNotes().size() == adapter.getFilteredNotes().size())
+            id = adapter.getNotes().get(position).getId();
+        else {
             id = adapter.getFilteredNotes().get(position).getId();
         }
         arg.putInt("id", id);
@@ -137,18 +135,16 @@ public class FragmentOne extends Fragment implements FragmentOneInterface {
 
     @Override
     public void onLongItemClick(int position, View v) {
-        if(adapter.getNotes().size() == adapter.getFilteredNotes().size())
+        if (adapter.getNotes().size() == adapter.getFilteredNotes().size())
             id = adapter.getNotes().get(position).getId();
-        else
-        {
+        else {
             id = adapter.getFilteredNotes().get(position).getId();
         }
         createNewTitleDeletePopUp();
 //        System.out.println("long click on item: " + adapter.getNotes().get(position).getTitle());
     }
 
-    public void createNewTitleDeletePopUp(){
-        // TODO: Bug ao criar uma segunda nota em sequencia, no deleteedit popup o edit text do titulo da nota esta semelhante a nota anterior
+    public void createNewTitleDeletePopUp() {
 
         dialogBuilder = new AlertDialog.Builder(activityInterface.getmainactivity());
         final View newTitleDeletePopUp = getLayoutInflater().inflate(R.layout.new_title_delete_popup, null);
@@ -158,6 +154,12 @@ public class FragmentOne extends Fragment implements FragmentOneInterface {
         deleteNote = (Button) newTitleDeletePopUp.findViewById(R.id.deleteButton);
         saveNewName = (Button) newTitleDeletePopUp.findViewById(R.id.editNameButton);
         cancel = (Button) newTitleDeletePopUp.findViewById(R.id.cancelButton);
+        addtopic = (Button) newTitleDeletePopUp.findViewById(R.id.addtopicbtn);
+        removetopic = (Button) newTitleDeletePopUp.findViewById(R.id.removetopicbtn);
+        sharenote = (Button) newTitleDeletePopUp.findViewById(R.id.sharenotebtn);
+        topicname = (EditText) newTitleDeletePopUp.findViewById(R.id.topicnameeditid);
+        spinnertopicshare = (Spinner) newTitleDeletePopUp.findViewById(R.id.spinnersharemqtt);
+        List<String> topics = new ArrayList<String>();
 
         dialogBuilder.setView(newTitleDeletePopUp);
         dialog = dialogBuilder.create();
@@ -178,10 +180,59 @@ public class FragmentOne extends Fragment implements FragmentOneInterface {
             @Override
             public void onClick(View v) {
 
-                newNoteName =(EditText) newTitleDeletePopUp.findViewById(R.id.newNoteName);
+                newNoteName = (EditText) newTitleDeletePopUp.findViewById(R.id.newNoteName);
                 mViewModel.changeTitle(id, String.valueOf(newNoteName.getText()));
 
                 dialog.dismiss();
+            }
+        });
+
+        addtopic.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (topics.contains(topicname.getText().toString()))
+                    Toast.makeText(activityInterface.getmainactivity(), "Already added", Toast.LENGTH_SHORT).show();
+                else if (topicname.getText().toString().isBlank())
+                    Toast.makeText(activityInterface.getmainactivity(), "Write a topic", Toast.LENGTH_SHORT).show();
+                else {
+                    topics.add(topicname.getText().toString());
+                    topicname.setText("");
+                    ArrayAdapter<String> adapter = new ArrayAdapter<String>(activityInterface.getmainactivity(), android.R.layout.simple_spinner_item, topics);
+                    adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                    spinnertopicshare.setAdapter(adapter);
+                }
+            }
+        });
+
+        removetopic.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(topics.size() > 0) {
+                    topics.remove(spinnertopicshare.getSelectedItem().toString());
+                    ArrayAdapter<String> adapter = new ArrayAdapter<String>(activityInterface.getmainactivity(), android.R.layout.simple_spinner_item, topics);
+                    adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                    spinnertopicshare.setAdapter(adapter);
+                }
+                else
+                    Toast.makeText(activityInterface.getmainactivity(), "There are no topics", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        sharenote.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(topics.size() > 0)
+                {
+                    NoteDTO noteDTO = mViewModel.getNoteById(id);
+
+                    topics.forEach(topic -> {
+                    mViewModel.publishMessage(noteDTO,topic);
+                    });
+
+                    dialog.dismiss();
+                }
+                else
+                    Toast.makeText(activityInterface.getmainactivity(), "Add a topic first", Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -195,7 +246,7 @@ public class FragmentOne extends Fragment implements FragmentOneInterface {
     }
 
 
-    public void createNewNotePopUp(){
+    public void createNewNotePopUp() {
         dialogBuilder = new AlertDialog.Builder(activityInterface.getmainactivity());
         final View newNotePopUp = getLayoutInflater().inflate(R.layout.new_note_popup, null);
         newNoteName = (EditText) newNotePopUp.findViewById(R.id.newTitle);
@@ -211,7 +262,7 @@ public class FragmentOne extends Fragment implements FragmentOneInterface {
             @Override
             public void onClick(View v) {
 
-                newNoteName =(EditText) newNotePopUp.findViewById(R.id.newTitle);
+                newNoteName = (EditText) newNotePopUp.findViewById(R.id.newTitle);
                 mViewModel.addNote(String.valueOf(newNoteName.getText()));
 
                 dialog.dismiss();
@@ -227,11 +278,11 @@ public class FragmentOne extends Fragment implements FragmentOneInterface {
 
     }
 
-    public void mqttPopUp(){
+    public void mqttPopUp() {
         dialogBuilder = new AlertDialog.Builder(activityInterface.getmainactivity());
         final View mqttPopUp = getLayoutInflater().inflate(R.layout.mqtt_popup, null);
         cancel = (Button) mqttPopUp.findViewById(R.id.cancelbuttonmqtt);
-        subscribe =  (Button) mqttPopUp.findViewById(R.id.subscribebuttonmqtt);
+        subscribe = (Button) mqttPopUp.findViewById(R.id.subscribebuttonmqtt);
         unsubscribe = (Button) mqttPopUp.findViewById(R.id.unsubbuttonmqtt);
         spinnermqttpopup = (Spinner) mqttPopUp.findViewById(R.id.spinnermqtt);
 
@@ -248,20 +299,22 @@ public class FragmentOne extends Fragment implements FragmentOneInterface {
             @Override
             public void onClick(View v) {
                 subscribetopic = (EditText) mqttPopUp.findViewById(R.id.subscribemqtt);
-                if(mViewModel.subscribeToTopic(subscribetopic.getText().toString()))
+                if (mViewModel.subscribeToTopic(subscribetopic.getText().toString()))
                     subscribetopic.setText("");
+                else if (topicname.getText().toString().isBlank())
+                    Toast.makeText(activityInterface.getmainactivity(), "Write a topic", Toast.LENGTH_SHORT).show();
                 else
-                    Toast.makeText(activityInterface.getmainactivity(),"Already subscribed",Toast.LENGTH_SHORT).show();
+                    Toast.makeText(activityInterface.getmainactivity(), "Already subscribed", Toast.LENGTH_SHORT).show();
             }
         });
 
         unsubscribe.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(spinnermqttpopup.getSelectedItem() != null)
+                if (spinnermqttpopup.getSelectedItem() != null)
                     mViewModel.unsubscribeToTopic(spinnermqttpopup.getSelectedItem().toString());
                 else
-                    Toast.makeText(activityInterface.getmainactivity(),"Nothing to unsubscribe",Toast.LENGTH_SHORT).show();
+                    Toast.makeText(activityInterface.getmainactivity(), "Nothing to unsubscribe", Toast.LENGTH_SHORT).show();
             }
         });
         cancel.setOnClickListener(new View.OnClickListener() {
@@ -273,12 +326,11 @@ public class FragmentOne extends Fragment implements FragmentOneInterface {
     }
 
 
-    public void mqttMsgPopUp(String topic, MqttMessage message)
-    {
+    public void mqttMsgPopUp(String topic, MqttMessage message) {
         AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(activityInterface.getmainactivity());
         final View mqttmesagePopUp = getLayoutInflater().inflate(R.layout.mqtt_message_popup, null);
         Button confirm = (Button) mqttmesagePopUp.findViewById(R.id.confirmmsgbtnmqtt);
-        Button cancel =  (Button) mqttmesagePopUp.findViewById(R.id.cancelmsgbtnmqtt2);
+        Button cancel = (Button) mqttmesagePopUp.findViewById(R.id.cancelmsgbtnmqtt2);
         TextView topico = (TextView) mqttmesagePopUp.findViewById(R.id.topicmsgmqtt);
         TextView titulo = (TextView) mqttmesagePopUp.findViewById(R.id.titlemsgmqtt);
         NoteDTO noteDTO = new Gson().fromJson(message.toString(), NoteDTO.class);
@@ -292,7 +344,7 @@ public class FragmentOne extends Fragment implements FragmentOneInterface {
         confirm.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mViewModel.insertMqttNote(noteDTO.getTitle(),noteDTO.getDescription());
+                mViewModel.insertMqttNote(noteDTO.getTitle(), noteDTO.getDescription());
                 dialog.dismiss();
             }
         });

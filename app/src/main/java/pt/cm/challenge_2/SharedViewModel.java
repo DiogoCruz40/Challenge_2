@@ -298,17 +298,17 @@ public class SharedViewModel extends AndroidViewModel {
         }
     }
 
-    public void publishMessage(MQTTHelper client, String msg, int qos, String topic, boolean init) {
+    public void publishMessage(NoteDTO noteDTO, String topic) {
         try {
             byte[] encodedPayload;
-            if (init)
-                msg = client.getName().toUpperCase() + ": " + msg;
 
+            String msg = "{\"title\":\"" + noteDTO.getTitle()+"\"" + ",\"description\":\"" + noteDTO.getDescription() + "\"}";
+//            Log.w("mqtt",msg);
             encodedPayload = msg.getBytes(StandardCharsets.UTF_8);
             MqttMessage message = new MqttMessage(encodedPayload);
-            message.setQos(qos);
+            message.setQos(0);
 
-            client.mqttAndroidClient.publish(topic, message);
+            mqttHelper.mqttAndroidClient.publish(topic, message);
             // view set text to null
         } catch (MqttPersistenceException e) {
             Log.w("mqtt", "MQTT Exception");

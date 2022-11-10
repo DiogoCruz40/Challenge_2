@@ -87,16 +87,16 @@
         app:layout_constraintTop_toBottomOf="@+id/editNameButton" />
 
     <EditText
-        android:id="@+id/editTextTextPersonName"
+        android:id="@+id/topicnameeditid"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginTop="32dp"
         android:layout_marginEnd="8dp"
         android:ems="10"
+        android:hint="Topic"
         android:inputType="textPersonName"
         android:minHeight="48dp"
-        android:hint="Topic"
         app:layout_constraintEnd_toStartOf="@+id/addtopicbtn"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView10" />
@@ -110,7 +110,7 @@
         android:layout_marginEnd="36dp"
         android:text="Add"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/editTextTextPersonName"
+        app:layout_constraintStart_toEndOf="@+id/topicnameeditid"
         app:layout_constraintTop_toBottomOf="@+id/textView10" />
 
     <TextView

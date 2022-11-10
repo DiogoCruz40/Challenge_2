@@ -79,8 +79,6 @@ public class MainActivity extends AppCompatActivity implements ActivityInterface
 
         assert fragment1 != null;
         fragment1.createNewNotePopUp();
-
-        fm.beginTransaction().replace(R.id.targetcontainer, new FragmentOne()).addToBackStack(null).commit();
     }
 
     private void mqttopenpopup(){
@@ -88,8 +86,6 @@ public class MainActivity extends AppCompatActivity implements ActivityInterface
 
         assert fragment1 != null;
         fragment1.mqttPopUp();
-
-        fm.beginTransaction().replace(R.id.targetcontainer, new FragmentOne()).addToBackStack(null).commit();
     }
 
     @Override
@@ -98,9 +94,8 @@ public class MainActivity extends AppCompatActivity implements ActivityInterface
 
         assert fragment1 != null;
         fragment1.mqttMsgPopUp(topic,message);
-
-        fm.beginTransaction().replace(R.id.targetcontainer, new FragmentOne()).addToBackStack(null).commit();
     }
+
     //Insert here the operations in which menu button
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
