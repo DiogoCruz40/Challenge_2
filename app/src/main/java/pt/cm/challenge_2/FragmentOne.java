@@ -1,6 +1,7 @@
 package pt.cm.challenge_2;
 
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.Context;
 import android.os.Bundle;
 
@@ -17,10 +18,19 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Menu;
 import android.view.MenuInflater;
+import android.widget.Adapter;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.SearchView;
+import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
+
+import com.google.gson.Gson;
+
+import org.eclipse.paho.client.mqttv3.MqttMessage;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,8 +46,9 @@ public class FragmentOne extends Fragment implements FragmentOneInterface {
     private ActivityInterface activityInterface;
     private AlertDialog.Builder dialogBuilder;
     private AlertDialog dialog;
-    private EditText newNoteName;
-    private Button deleteNote, saveNewName, cancel;
+    private Spinner spinnermqttpopup;
+    private EditText newNoteName, subscribetopic;
+    private Button deleteNote, saveNewName, cancel, subscribe, unsubscribe;
     private int id;
 
     public FragmentOne() {
@@ -137,6 +148,8 @@ public class FragmentOne extends Fragment implements FragmentOneInterface {
     }
 
     public void createNewTitleDeletePopUp(){
+        // TODO: Bug ao criar uma segunda nota em sequencia, no deleteedit popup o edit text do titulo da nota esta semelhante a nota anterior
+
         dialogBuilder = new AlertDialog.Builder(activityInterface.getmainactivity());
         final View newTitleDeletePopUp = getLayoutInflater().inflate(R.layout.new_title_delete_popup, null);
         newNoteName = (EditText) newTitleDeletePopUp.findViewById(R.id.newNoteName);
@@ -213,4 +226,82 @@ public class FragmentOne extends Fragment implements FragmentOneInterface {
         });
 
     }
+
+    public void mqttPopUp(){
+        dialogBuilder = new AlertDialog.Builder(activityInterface.getmainactivity());
+        final View mqttPopUp = getLayoutInflater().inflate(R.layout.mqtt_popup, null);
+        cancel = (Button) mqttPopUp.findViewById(R.id.cancelbuttonmqtt);
+        subscribe =  (Button) mqttPopUp.findViewById(R.id.subscribebuttonmqtt);
+        unsubscribe = (Button) mqttPopUp.findViewById(R.id.unsubbuttonmqtt);
+        spinnermqttpopup = (Spinner) mqttPopUp.findViewById(R.id.spinnermqtt);
+
+        mViewModel.getTopics().observe(activityInterface.getmainactivity(), topics -> {
+            ArrayAdapter<String> adapter = new ArrayAdapter<String>(activityInterface.getmainactivity(), android.R.layout.simple_spinner_item, topics);
+            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+            spinnermqttpopup.setAdapter(adapter);
+        });
+        dialogBuilder.setView(mqttPopUp);
+        dialog = dialogBuilder.create();
+        dialog.show();
+
+        subscribe.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                subscribetopic = (EditText) mqttPopUp.findViewById(R.id.subscribemqtt);
+                if(mViewModel.subscribeToTopic(subscribetopic.getText().toString()))
+                    subscribetopic.setText("");
+                else
+                    Toast.makeText(activityInterface.getmainactivity(),"Already subscribed",Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        unsubscribe.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(spinnermqttpopup.getSelectedItem() != null)
+                    mViewModel.unsubscribeToTopic(spinnermqttpopup.getSelectedItem().toString());
+                else
+                    Toast.makeText(activityInterface.getmainactivity(),"Nothing to unsubscribe",Toast.LENGTH_SHORT).show();
+            }
+        });
+        cancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+            }
+        });
+    }
+
+
+    public void mqttMsgPopUp(String topic, MqttMessage message)
+    {
+        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(activityInterface.getmainactivity());
+        final View mqttmesagePopUp = getLayoutInflater().inflate(R.layout.mqtt_message_popup, null);
+        Button confirm = (Button) mqttmesagePopUp.findViewById(R.id.confirmmsgbtnmqtt);
+        Button cancel =  (Button) mqttmesagePopUp.findViewById(R.id.cancelmsgbtnmqtt2);
+        TextView topico = (TextView) mqttmesagePopUp.findViewById(R.id.topicmsgmqtt);
+        TextView titulo = (TextView) mqttmesagePopUp.findViewById(R.id.titlemsgmqtt);
+        NoteDTO noteDTO = new Gson().fromJson(message.toString(), NoteDTO.class);
+        topico.setText(topic);
+        titulo.setText(noteDTO.getTitle());
+
+        dialogBuilder.setView(mqttmesagePopUp);
+        Dialog dialog = dialogBuilder.create();
+        dialog.show();
+
+        confirm.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mViewModel.insertMqttNote(noteDTO.getTitle(),noteDTO.getDescription());
+                dialog.dismiss();
+            }
+        });
+        cancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+            }
+        });
+    }
+
 }

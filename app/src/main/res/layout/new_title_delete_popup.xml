@@ -96,7 +96,7 @@
         android:ems="10"
         android:inputType="textPersonName"
         android:minHeight="48dp"
-        android:text="Topic"
+        android:hint="Topic"
         app:layout_constraintEnd_toStartOf="@+id/addtopicbtn"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView10" />
@@ -127,7 +127,7 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <Spinner
-        android:id="@+id/spinner"
+        android:id="@+id/spinnersharemqtt"
         android:layout_width="184dp"
         android:layout_height="35dp"
         android:layout_marginStart="16dp"
@@ -146,7 +146,7 @@
         android:layout_marginEnd="16dp"
         android:text="Remove"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/spinner"
+        app:layout_constraintStart_toEndOf="@+id/spinnersharemqtt"
         app:layout_constraintTop_toBottomOf="@+id/addtopicbtn" />
 
     <Button
@@ -157,6 +157,6 @@
         android:text="Share note"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/spinner" />
+        app:layout_constraintTop_toBottomOf="@+id/spinnersharemqtt" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

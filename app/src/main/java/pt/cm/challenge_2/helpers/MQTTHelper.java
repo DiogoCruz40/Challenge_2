@@ -15,11 +15,11 @@ public class MQTTHelper {
     public MqttAndroidClient mqttAndroidClient;
 
     final String server = "tcp://broker.hivemq.com:1883"; //TODO - Place the IP here
-    final String TAG = "MQTT"; //TODO - This is just for logs
+    final String TAG = "mqtt"; //TODO - This is just for logs
     private String name;
 
 
-    public MQTTHelper(Context context, String name, String topic) {
+    public MQTTHelper(Context context, String name) {
         this.name = name;
 
         mqttAndroidClient = new MqttAndroidClient(context, server, name);
@@ -85,7 +85,7 @@ public class MQTTHelper {
             });
 
         } catch (MqttException ex) {
-            System.err.println("Exception subscribing");
+            Log.w(TAG, "Subscribed fail!");
             ex.printStackTrace();
         }
     }

@@ -3,73 +3,96 @@ package pt.cm.challenge_2;
 import android.app.Application;
 import android.os.Handler;
 import android.os.Looper;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.MutableLiveData;
-import androidx.lifecycle.ViewModel;
 
+
+import com.google.gson.Gson;
+
+import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken;
+import org.eclipse.paho.client.mqttv3.MqttCallbackExtended;
+import org.eclipse.paho.client.mqttv3.MqttClient;
+import org.eclipse.paho.client.mqttv3.MqttException;
+import org.eclipse.paho.client.mqttv3.MqttMessage;
+import org.eclipse.paho.client.mqttv3.MqttPersistenceException;
+import org.json.JSONObject;
+
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+import pt.cm.challenge_2.Interfaces.ActivityInterface;
 import pt.cm.challenge_2.Interfaces.NoteMapperInterface;
 import pt.cm.challenge_2.database.AppDatabase;
 import pt.cm.challenge_2.database.entities.Note;
 import pt.cm.challenge_2.dtos.NoteDTO;
+import pt.cm.challenge_2.helpers.MQTTHelper;
 import pt.cm.challenge_2.mappers.NoteMapper;
 
 public class SharedViewModel extends AndroidViewModel {
 
-    private MutableLiveData<List<NoteDTO>> notes = new MutableLiveData<List<NoteDTO>>();
     private AppDatabase mDb;
+    private final MutableLiveData<List<NoteDTO>> notes = new MutableLiveData<List<NoteDTO>>();
+    private final MutableLiveData<String> toastMessageObserver = new MutableLiveData<String>();
+    private final MutableLiveData<List<String>> topics = new MutableLiveData<List<String>>();
+    private MQTTHelper mqttHelper;
 
     public SharedViewModel(@NonNull Application application) {
         super(application);
     }
 
-    public void setNotes (List<NoteDTO> notes){
+    public void setNotes(List<NoteDTO> notes) {
         this.notes.setValue(notes);
     }
-    
-    public MutableLiveData<List<NoteDTO>> getNotes(){
+
+    public MutableLiveData<List<NoteDTO>> getNotes() {
         return this.notes;
     }
 
-    public String getNoteContentById (int id){
-        for (NoteDTO n: Objects.requireNonNull(this.notes.getValue()))
-        {
-            if(n.getId() == id){
+    public MutableLiveData<String> getToastObserver() {
+        return this.toastMessageObserver;
+    }
+
+    public MutableLiveData<List<String>> getTopics() {
+        return this.topics;
+    }
+
+    public String getNoteContentById(int id) {
+        for (NoteDTO n : Objects.requireNonNull(this.notes.getValue())) {
+            if (n.getId() == id) {
                 return n.getDescription();
             }
         }
         return null;
     }
 
-    public NoteDTO getNoteById (int id){
-        for (NoteDTO n: Objects.requireNonNull(this.notes.getValue()))
-        {
-            if(n.getId() == id){
+    public NoteDTO getNoteById(int id) {
+        for (NoteDTO n : Objects.requireNonNull(this.notes.getValue())) {
+            if (n.getId() == id) {
                 return n;
             }
         }
         return null;
     }
 
-    public void addNote (String title){
+    public void insertMqttNote(String title, String description) {
 
         AppExecutors.getInstance().diskIO().execute(new Runnable() {
             @Override
             public void run() {
                 // how to add notes
                 NoteMapperInterface noteMapperInterface = new NoteMapper();
-                mDb.notesDAO().insertNote(noteMapperInterface.toEntityNote(new NoteDTO(title, "")));
-
+                mDb.notesDAO().insertNote(noteMapperInterface.toEntityNote(new NoteDTO(title, description)));
+                NoteDTO noteDTO = noteMapperInterface.toNoteDTO(mDb.notesDAO().findByTitle(title));
                 new Handler(Looper.getMainLooper()).post(new Runnable() {
                     @Override
                     public void run() {
                         List<NoteDTO> notesAux = notes.getValue();
-                        notesAux.add(new NoteDTO(title, ""));
+                        notesAux.add(noteDTO);
                         notes.setValue(notesAux);
                     }
                 });
@@ -77,7 +100,28 @@ public class SharedViewModel extends AndroidViewModel {
         });
     }
 
-    public void changeNote (int id, String note){
+    public void addNote(String title) {
+
+        AppExecutors.getInstance().diskIO().execute(new Runnable() {
+            @Override
+            public void run() {
+                // how to add notes
+                NoteMapperInterface noteMapperInterface = new NoteMapper();
+                mDb.notesDAO().insertNote(noteMapperInterface.toEntityNote(new NoteDTO(title, "")));
+                NoteDTO noteDTO = noteMapperInterface.toNoteDTO(mDb.notesDAO().findByTitle(title));
+                new Handler(Looper.getMainLooper()).post(new Runnable() {
+                    @Override
+                    public void run() {
+                        List<NoteDTO> notesAux = notes.getValue();
+                        notesAux.add(noteDTO);
+                        notes.setValue(notesAux);
+                    }
+                });
+            }
+        });
+    }
+
+    public void changeNote(int id, String note) {
 
         AppExecutors.getInstance().diskIO().execute(new Runnable() {
             @Override
@@ -88,7 +132,7 @@ public class SharedViewModel extends AndroidViewModel {
                     @Override
                     public void run() {
                         List<NoteDTO> notesAux = notes.getValue();
-                        if(notesAux != null) {
+                        if (notesAux != null) {
                             notesAux.forEach(noteDTO -> {
                                 if (noteDTO.getId() == id) {
                                     noteDTO.setDescription(note);
@@ -102,7 +146,7 @@ public class SharedViewModel extends AndroidViewModel {
         });
     }
 
-    public void changeTitle (int id, String title){
+    public void changeTitle(int id, String title) {
 
         AppExecutors.getInstance().diskIO().execute(new Runnable() {
             @Override
@@ -113,13 +157,13 @@ public class SharedViewModel extends AndroidViewModel {
                     @Override
                     public void run() {
                         List<NoteDTO> notesAux = notes.getValue();
-                        if(notesAux != null) {
+                        if (notesAux != null) {
                             notesAux.forEach(noteDTO -> {
                                 if (noteDTO.getId() == id) {
                                     noteDTO.setTitle(title);
                                 }
                             });
-                        notes.setValue(notesAux);
+                            notes.setValue(notesAux);
                         }
                     }
                 });
@@ -127,7 +171,7 @@ public class SharedViewModel extends AndroidViewModel {
         });
     }
 
-    public void deleteNote (int id){
+    public void deleteNote(int id) {
 
         AppExecutors.getInstance().diskIO().execute(new Runnable() {
             @Override
@@ -149,7 +193,7 @@ public class SharedViewModel extends AndroidViewModel {
 
     }
 
-    public void startDB(){
+    public void startDB() {
         mDb = AppDatabase.getInstance(getApplication().getApplicationContext());
 
         AppExecutors.getInstance().diskIO().execute(new Runnable() {
@@ -163,10 +207,9 @@ public class SharedViewModel extends AndroidViewModel {
                     @Override
                     public void run() {
 
-                        if(notesDTO == null){
+                        if (notesDTO == null) {
                             notes.setValue(new ArrayList<NoteDTO>());
-                        }
-                        else{
+                        } else {
                             notes.setValue(notesDTO);
                         }
 
@@ -176,7 +219,7 @@ public class SharedViewModel extends AndroidViewModel {
         });
     }
 
-    private void deleteAllNotes(){
+    private void deleteAllNotes() {
         AppExecutors.getInstance().diskIO().execute(new Runnable() {
             @Override
             public void run() {
@@ -191,5 +234,86 @@ public class SharedViewModel extends AndroidViewModel {
         });
     }
 
+    public void connmqtt(ActivityInterface activityInterface) {
+        mqttHelper = new MQTTHelper(getApplication().getApplicationContext(), MqttClient.generateClientId());
 
+        mqttHelper.setCallback(new MqttCallbackExtended() {
+            @Override
+            public void connectComplete(boolean reconnect, String serverURI) {
+                toastMessageObserver.setValue("MQTT conn successful");
+                Log.w("mqtt", "connected");
+            }
+
+            @Override
+            public void connectionLost(Throwable cause) {
+                Log.w("mqtt", cause);
+                toastMessageObserver.setValue(cause.getMessage());
+            }
+
+            @Override
+            public void messageArrived(String topic, MqttMessage message) throws Exception {
+//                NoteDTO noteDTO = new Gson().fromJson(message.toString(), NoteDTO.class);
+//                Log.w("mqtt", noteDTO.getTitle());
+//                {"title":"nota","description":"wazzup"}
+                activityInterface.msgmqttpopup(topic,message);
+            }
+
+            @Override
+            public void deliveryComplete(IMqttDeliveryToken token) {
+
+            }
+        });
+        mqttHelper.connect();
+    }
+
+    public boolean subscribeToTopic(String topic) {
+        try {
+            mqttHelper.subscribeToTopic(topic);
+            List<String> listaux = topics.getValue();
+
+            if (listaux == null)
+                listaux = new ArrayList<String>();
+            if (listaux.contains(topic))
+                return false;
+
+            listaux.add(topic);
+            topics.setValue(listaux);
+            return true;
+        } catch (Exception e) {
+            toastMessageObserver.setValue(e.getMessage());
+            return false;
+        }
+    }
+
+    public boolean unsubscribeToTopic(String topic) {
+        try {
+            mqttHelper.unsubscribeToTopic(topic);
+            List<String> listaux = topics.getValue();
+            listaux.remove(topic);
+            topics.setValue(listaux);
+            return true;
+        } catch (Exception e) {
+            toastMessageObserver.setValue(e.getMessage());
+            return false;
+        }
+    }
+
+    public void publishMessage(MQTTHelper client, String msg, int qos, String topic, boolean init) {
+        try {
+            byte[] encodedPayload;
+            if (init)
+                msg = client.getName().toUpperCase() + ": " + msg;
+
+            encodedPayload = msg.getBytes(StandardCharsets.UTF_8);
+            MqttMessage message = new MqttMessage(encodedPayload);
+            message.setQos(qos);
+
+            client.mqttAndroidClient.publish(topic, message);
+            // view set text to null
+        } catch (MqttPersistenceException e) {
+            Log.w("mqtt", "MQTT Exception");
+        } catch (MqttException e) {
+            Log.w("mqtt", "Encoding Exception");
+        }
+    }
 }
