@@ -299,10 +299,10 @@ public class FragmentOne extends Fragment implements FragmentOneInterface {
             @Override
             public void onClick(View v) {
                 subscribetopic = (EditText) mqttPopUp.findViewById(R.id.subscribemqtt);
-                if (mViewModel.subscribeToTopic(subscribetopic.getText().toString()))
-                    subscribetopic.setText("");
-                else if (topicname.getText().toString().isBlank())
+                if (subscribetopic.getText().toString().isBlank())
                     Toast.makeText(activityInterface.getmainactivity(), "Write a topic", Toast.LENGTH_SHORT).show();
+                else if (mViewModel.subscribeToTopic(subscribetopic.getText().toString()))
+                    subscribetopic.setText("");
                 else
                     Toast.makeText(activityInterface.getmainactivity(), "Already subscribed", Toast.LENGTH_SHORT).show();
             }

@@ -310,10 +310,8 @@ public class SharedViewModel extends AndroidViewModel {
 
             mqttHelper.mqttAndroidClient.publish(topic, message);
             // view set text to null
-        } catch (MqttPersistenceException e) {
-            Log.w("mqtt", "MQTT Exception");
-        } catch (MqttException e) {
-            Log.w("mqtt", "Encoding Exception");
+        } catch (Throwable e) {
+            Log.w("mqtt", e.getMessage());
         }
     }
 }

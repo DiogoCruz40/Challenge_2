@@ -3,13 +3,13 @@ package pt.cm.challenge_2.helpers;
 import android.content.Context;
 import android.util.Log;
 
-import org.eclipse.paho.android.service.MqttAndroidClient;
+import info.mqtt.android.service.Ack;
+import info.mqtt.android.service.MqttAndroidClient;
 import org.eclipse.paho.client.mqttv3.DisconnectedBufferOptions;
 import org.eclipse.paho.client.mqttv3.IMqttActionListener;
 import org.eclipse.paho.client.mqttv3.IMqttToken;
 import org.eclipse.paho.client.mqttv3.MqttCallbackExtended;
 import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
-import org.eclipse.paho.client.mqttv3.MqttException;
 
 public class MQTTHelper {
     public MqttAndroidClient mqttAndroidClient;
@@ -22,7 +22,7 @@ public class MQTTHelper {
     public MQTTHelper(Context context, String name) {
         this.name = name;
 
-        mqttAndroidClient = new MqttAndroidClient(context, server, name);
+        mqttAndroidClient = new MqttAndroidClient(context, server, name, Ack.AUTO_ACK);
     }
 
     public void setCallback(MqttCallbackExtended callback) {
@@ -56,7 +56,7 @@ public class MQTTHelper {
             });
 
 
-        } catch (MqttException ex) {
+        } catch (Exception ex) {
             ex.printStackTrace();
         }
     }
@@ -64,7 +64,7 @@ public class MQTTHelper {
     public void stop() {
         try {
             mqttAndroidClient.disconnect();
-        } catch (MqttException ex) {
+        } catch (Exception ex) {
             ex.printStackTrace();
         }
     }
@@ -84,8 +84,8 @@ public class MQTTHelper {
                 }
             });
 
-        } catch (MqttException ex) {
-            Log.w(TAG, "Subscribed fail!");
+        } catch (Exception ex) {
+            Log.w(TAG, ex.getMessage());
             ex.printStackTrace();
         }
     }
@@ -104,8 +104,8 @@ public class MQTTHelper {
                 }
             });
 
-        } catch (MqttException ex) {
-            System.err.println("Exception unsubscribing");
+        } catch (Exception ex) {
+            Log.w(TAG, ex.getMessage());
             ex.printStackTrace();
         }
     }
