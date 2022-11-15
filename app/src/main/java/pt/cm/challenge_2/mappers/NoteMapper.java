@@ -16,7 +16,12 @@ import pt.cm.challenge_2.dtos.NoteDTO;
 
 public class NoteMapper implements NoteMapperInterface {
 
-    ModelMapper modelMapper = getMapper();
+    ModelMapper modelMapper;
+
+    public NoteMapper()
+    {
+        modelMapper = getMapper();
+    }
 
     private <S, T> List<T> mapList(List<S> source, Class<T> targetClass) {
         return source
