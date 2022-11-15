@@ -266,6 +266,11 @@ public class SharedViewModel extends AndroidViewModel {
         mqttHelper.connect();
     }
 
+    public void disconmqtt()
+    {
+        mqttHelper.mqttAndroidClient.disconnect();
+    }
+
     public boolean subscribeToTopic(String topic) {
         try {
             mqttHelper.subscribeToTopic(topic);

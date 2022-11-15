@@ -52,6 +52,12 @@ public class MainActivity extends AppCompatActivity implements ActivityInterface
     }
 
     @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        model.disconmqtt();
+    }
+
+    @Override
     public void changeFrag(Fragment fragment) {
         fm.beginTransaction().replace(R.id.targetcontainer, fragment).addToBackStack(null).commit();
     }
